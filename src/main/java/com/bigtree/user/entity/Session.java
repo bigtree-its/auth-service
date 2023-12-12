@@ -14,7 +14,7 @@ public class Session {
     @MongoId
     private String _id;
     private String userId;
-    private String sessionId;
+    private String token;
     private LocalDateTime start;
     private LocalDateTime finish;
 }

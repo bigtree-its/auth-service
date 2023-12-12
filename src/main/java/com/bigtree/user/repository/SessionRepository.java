@@ -11,7 +11,5 @@ import java.util.List;
 @Repository
 public interface SessionRepository extends MongoRepository<Session, Session> {
 
-    Session findByUserIdAndSessionId(String userId, String sessionId);
-
     List<Session> findByUserId(String userId);
 }

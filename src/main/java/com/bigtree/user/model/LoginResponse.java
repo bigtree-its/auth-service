@@ -1,7 +1,5 @@
 package com.bigtree.user.model;
 
-import com.bigtree.user.entity.Session;
-import com.bigtree.user.entity.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,11 +7,8 @@ import lombok.Data;
 @Builder
 public class LoginResponse {
 
-    private String email;
-    private String firstName;
-    private String lastName;
-    private String userId;
-    private String sessionId;
+    private String idToken;
+    private String accessToken;
     private Boolean success;
     private String message;
 }

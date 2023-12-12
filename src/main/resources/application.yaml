@@ -1,6 +1,9 @@
 server:
   port: 8081
 
+crypto:
+  key: 1234567891234567
+
 springdoc:
   api-docs:
     path: /api-docs
@@ -17,3 +20,18 @@ spring:
     mongodb:
       uri: mongodb+srv://productsuser:productspassword@cluster0.wzm30.gcp.mongodb.net/?retryWrites=true&w=majority
       database: test
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: noreply.houseofchef@gmail.com
+    password: rfgmkyrbdgwsnvgi
+    port: 587
+    debug: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    test-connection: false

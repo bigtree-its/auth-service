@@ -10,14 +10,21 @@ import com.bigtree.user.repository.PasswordResetOtpRepository;
 import com.bigtree.user.repository.SessionRepository;
 import com.bigtree.user.repository.UserAccountRepository;
 import com.bigtree.user.repository.UserRepository;
+import com.bigtree.user.security.JwtService;
+import com.mongodb.client.result.DeleteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -35,6 +42,15 @@ public class LoginService {
 
     @Autowired
     PasswordResetOtpRepository resetRepository;
+
+    @Autowired
+    JwtService jwtService;
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     public LoginResponse login(LoginRequest loginRequest) {
 
@@ -55,24 +71,24 @@ public class LoginService {
             log.info("Found an user {}", user.get_id());
             UserAccount account = userAccountRepository.getByUserIdAndPassword(user.get_id(), loginRequest.getPassword());
             if (account != null) {
+
+                final String idToken = jwtService.generateIdToken(user);
+                final String accessToken = jwtService.generateAccessToken(user.getEmail());
                 final Session session = Session.builder().build();
                 session.setStart(LocalDateTime.now());
                 session.setUserId(user.get_id());
-                session.setSessionId(RandomStringUtils.random(16, "abcdefghijklmnopqrstuvwxyz123456789"));
-                Session sessionActive = sessionRepository.save(session);
+                session.setToken(idToken);
+               sessionRepository.save(session);
                 response = LoginResponse.builder()
                         .success(true)
-                        .userId(user.get_id())
-                        .email(user.getEmail())
-                        .firstName(user.getFirstName())
-                        .lastName(user.getLastName())
-                        .sessionId(sessionActive.get_id())
+                        .accessToken(accessToken)
+                        .idToken(idToken)
                         .message("Login Success")
                         .build();
                 log.info("Login successful for user {}", loginRequest.getEmail());
             } else {
-                log.error("Cannot find account with provided username & password. {}", loginRequest.getEmail());
-                response = LoginResponse.builder().success(false).message("Username or Password not match").build();
+                log.error("Login failed. Email and password combination not found {}", loginRequest.getEmail());
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Cannot recognize the email and password");
             }
         } else {
             response = LoginResponse.builder().success(false).message("User not found").build();
@@ -81,9 +97,10 @@ public class LoginService {
     }
 
     public void logout(LogoutRequest request) {
-        Session session = sessionRepository.findByUserIdAndSessionId(request.getUserId(), request.getSessionId());
-        if (session != null) {
+        List<Session> sessions = sessionRepository.findByUserId(request.getUserId());
+        if (!CollectionUtils.isEmpty(sessions)) {
             log.info("Session found. Logging out");
+            Session session = sessions.get(0);
             session.setFinish(LocalDateTime.now());
             sessionRepository.save(session);
         }
@@ -93,7 +110,7 @@ public class LoginService {
         User user = userRepository.findByEmail(email);
         if (user == null || user.get_id() == null) {
             log.error("User not found");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "User not found");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
         }
         String salt = RandomStringUtils.random(6, "123456");
         PasswordResetOtp otp = PasswordResetOtp.builder()
@@ -104,25 +121,44 @@ public class LoginService {
 
         PasswordResetOtp savedOtp = resetRepository.save(otp);
         log.info("Generated otp {}", savedOtp);
+        emailService.setOnetimePasscode(email, user.getFullName(), savedOtp.getOtp());
         return savedOtp;
     }
 
     public void passwordResetSubmit(PasswordResetSubmit req) {
-        User user = userRepository.findByEmail(req.getEmail());
-        if (user == null || user.get_id() == null) {
-            log.error("User not found");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "User not found");
+        try{
+            User user = userRepository.findByEmail(req.getEmail());
+            if (user == null || user.get_id() == null) {
+                log.error("here was a problem. Cannot recognize the email. {}", req.getEmail());
+                throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
+            }
+            boolean changed = false;
+            final List<PasswordResetOtp> list = resetRepository.findAllByUserId(user.get_id());
+            if (! CollectionUtils.isEmpty(list)){
+                for (PasswordResetOtp passwordResetOtp : list) {
+                    if (StringUtils.equals(passwordResetOtp.getOtp(), req.getOtp())) {
+                        UserAccount account = userAccountRepository.getByUserId(user.get_id());
+                        account.setPassword(req.getPassword());
+                        account.setPasswordChanged(LocalDateTime.now());
+                        userAccountRepository.save(account);
+                        Query query = new Query();
+                        query.addCriteria(Criteria.where("userId").is(user.get_id()));
+                        final DeleteResult deleteResult = mongoTemplate.remove(query, "resets");
+                        log.info("Password reset successful for user {}. Removed old otp {}",user.getEmail(), deleteResult.getDeletedCount());
+                        emailService.setPasswordResetConfirmation(user.getEmail(), user.getFullName());
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+            if (! changed){
+                throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. OTP not found or not matched. Try to reset again");
+            }
+        }catch (Exception e){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Please contact customer support to reset your password.");
         }
-        PasswordResetOtp resetOtp = resetRepository.findByUserId(user.get_id());
-        if (StringUtils.equals(resetOtp.getOtp(), req.getOtp())) {
-            UserAccount account = userAccountRepository.getByUserId(user.get_id());
-            account.setPassword(req.getPassword());
-            account.setPasswordChanged(LocalDateTime.now());
-            userAccountRepository.save(account);
-            resetRepository.delete(resetOtp);
-        } else {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "OTP not found or not matched");
-        }
+
+
     }
 
 

@@ -8,6 +8,7 @@ import com.bigtree.user.error.ApiException;
 import com.bigtree.user.model.UserRegistrationRequest;
 import com.bigtree.user.repository.UserAccountRepository;
 import com.bigtree.user.repository.UserRepository;
+import com.bigtree.user.security.CryptoHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class UserService {
 
     @Autowired
     UserAccountRepository userAccountRepository;
+
+    @Autowired
+    CryptoHelper cryptoHelper;
 
     public List<User> getUsers() {
         log.info("Fetching all users");
@@ -86,6 +90,12 @@ public class UserService {
 
     public boolean registerUser(UserRegistrationRequest req) {
 
+//        try {
+//            final String decryptedFirstName = cryptoHelper.encryptAndEncode(req.getFirstName());
+//            log.info("Decrypted : {}", decryptedFirstName);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         if (req.getUserType() == null) {
             log.error("User type is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "User type is mandatory");

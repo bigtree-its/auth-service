@@ -46,7 +46,7 @@ public class LoginServiceTest {
                 .build());
         Assertions.assertTrue(login != null);
         Assertions.assertTrue(login.getSuccess());
-        Assertions.assertNotNull(login.getSessionId());
+        Assertions.assertNotNull(login.getAccessToken());
 
     }
 
@@ -61,7 +61,7 @@ public class LoginServiceTest {
                 .build());
         Assertions.assertTrue(login != null);
         Assertions.assertFalse(login.getSuccess());
-        Assertions.assertNull(login.getSessionId());
+        Assertions.assertNull(login.getAccessToken());
 
     }
 

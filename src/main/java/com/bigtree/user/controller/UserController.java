@@ -3,6 +3,8 @@ package com.bigtree.user.controller;
 import com.bigtree.user.entity.Session;
 import com.bigtree.user.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.server.Cookie;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,20 +65,6 @@ public class UserController {
         loginService.passwordResetSubmit(req);
         ApiResponse apiResponse = ApiResponse.builder().message("Your password has been successfully changed.").build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-        log.info("Received request to login for user {}", loginRequest.getEmail());
-        LoginResponse response = loginService.login(loginRequest);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/logout", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> logout(@Valid @RequestBody LogoutRequest request){
-        log.info("Received request to logout user {}", request.getUserId());
-        loginService.logout(request);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")

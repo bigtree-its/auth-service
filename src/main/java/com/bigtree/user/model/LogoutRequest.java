@@ -7,5 +7,4 @@ import lombok.Data;
 @Builder
 public class LogoutRequest {
     private String userId;
-    private String sessionId;
 }

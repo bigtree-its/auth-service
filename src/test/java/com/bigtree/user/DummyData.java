@@ -31,12 +31,14 @@ public class DummyData {
     }
 
     public static UserRegistrationRequest createDummyUserRegReq() {
-        String randomUserEmail = RandomStringUtils.random(5, "12345abcdef");
+        String randomUserEmail = "nava.arul@gmail.com";
+//        String randomUserEmail = RandomStringUtils.random(5, "12345abcdef");
         return UserRegistrationRequest.builder()
                 .userType(UserType.SUPPLIER)
                 .password("1234")
                 .mobile("0987654321")
-                .email(randomUserEmail + "user@mail.com")
+                .email(randomUserEmail)
+//                .email(randomUserEmail + "user@mail.com")
                 .firstName("user")
                 .lastName("user")
                 .build();

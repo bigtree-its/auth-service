@@ -50,6 +50,11 @@ class UserServiceApplicationTests {
 		userService.deleteUser(updated.get_id());
 	}
 
+	@Test
+	public void testDeleteAllUsers(){
+		userService.deleteAll();
+	}
+
 
 
 }

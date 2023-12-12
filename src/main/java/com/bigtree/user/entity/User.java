@@ -18,4 +18,8 @@ public class User {
     private String mobile;
     private UserType userType;
 
+    public String getFullName(){
+        return firstName+ " "+ lastName;
+    }
+
 }
