@@ -5,8 +5,8 @@ plugins {
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
-group = 'com.bigtree.user'
-version = '0.0.1-SNAPSHOT'
+group = 'com.bigtree.auth'
+version = '1.0'
 
 java {
 	sourceCompatibility = '17'

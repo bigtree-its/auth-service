@@ -13,7 +13,7 @@ springdoc:
 
 spring:
   application:
-    name: user-service
+    name: auth-service
   main:
     banner-mode: "off"
   data:
