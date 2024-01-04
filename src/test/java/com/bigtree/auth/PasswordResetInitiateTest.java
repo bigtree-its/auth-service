@@ -23,7 +23,7 @@ public class PasswordResetInitiateTest {
 
     @BeforeAll
     void setUpFixture() {
-        dummyUserRegReq = DummyData.createRegisterRequest(ClientType.CUSTOMER);
+        dummyUserRegReq = DummyData.createRegisterRequest(ClientType.Customer);
     }
 
     @Test

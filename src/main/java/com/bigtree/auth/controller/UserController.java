@@ -4,6 +4,8 @@ import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.entity.Session;
 import com.bigtree.auth.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,29 +47,29 @@ public class UserController {
 
     @GetMapping(value = "/{userId}")
     public ResponseEntity<Identity> get(@PathVariable String userId){
-        log.info("Received request to get auth {}", userId);
+        log.info("Received request to get user {}", userId);
         Identity identity = userService.getUser(userId);
         return ResponseEntity.ok().body(identity);
     }
 
     @PostMapping(value = "/password-reset/initiate", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> passwordResetInitiate(@Valid @RequestBody PasswordResetInitiate req){
-        log.info("Received password reset initiate request for auth {}", req.getEmail());
+        log.info("Received password reset initiate request for user {}", req.getEmail());
         loginService.passwordResetInitiate(req.getEmail());
         ApiResponse apiResponse = ApiResponse.builder().message("An OTP sent to your registered email address. Please use that to reset your password").build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
     @PostMapping(value = "/password-reset/submit", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> passwordResetSubmit(@Valid @RequestBody PasswordResetSubmit req){
-        log.info("Received password reset request for auth {}", req.getEmail());
+        log.info("Received password reset request for user {}", req.getEmail());
         loginService.passwordResetSubmit(req);
         ApiResponse apiResponse = ApiResponse.builder().message("Your password has been successfully changed.").build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest){
-        log.info("Received request to register new auth {}", userRegistrationRequest);
+    @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest){
+        log.info("Received request to signup new user {}", userRegistrationRequest);
         ApiResponse response  = userService.registerUser(userRegistrationRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -75,14 +77,14 @@ public class UserController {
 
     @PutMapping(value = "/{userId}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Identity> update(@PathVariable String userId, @Valid @RequestBody Identity identity){
-        log.info("Received request to update auth {}", userId);
+        log.info("Received request to update user {}", userId);
         Identity updated = userService.updateUser(userId, identity);
         return ResponseEntity.ok().body(updated);
     }
 
     @DeleteMapping(value = "/{userId}")
     public ResponseEntity<Void> delete(@PathVariable String userId){
-        log.info("Received request to delete auth {}", userId);
+        log.info("Received request to delete user {}", userId);
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -117,5 +119,14 @@ public class UserController {
         log.info("Returning active session for auth {}", email);
         return ResponseEntity.ok().body(session);
     }
+
+
+    @PostMapping(value = "/private-key-jwt", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = "application/json")
+    public ResponseEntity<ApiResponse> getPrivateKeyJwt(@Valid @RequestParam MultiValueMap multiValueMap){
+        log.info("Received request to retrieve private-key-jwt ");
+        ApiResponse response  = userService.getPrivateKeyJwt(multiValueMap);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
 

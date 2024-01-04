@@ -1,5 +1,6 @@
 package com.bigtree.auth.security;
 
+import com.bigtree.auth.entity.ClientType;
 import com.bigtree.auth.entity.Identity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,12 +70,16 @@ public class JwtService {
     }
 
     public String generateAccessToken(Identity identity) {
-        log.info("The Secret Key Algo: {}, Key: ", getSecretKey().getAlgorithm(), getSecretKey().toString());
+        log.info("The Secret Key Algo: {}, Key: {}", getSecretKey().getAlgorithm(), getSecretKey().toString());
+        Date expiry = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
+        if ( identity.getClientType() == ClientType.CustomerApp || identity.getClientType() == ClientType.SupplierApp){
+            expiry = Date.from(LocalDate.now().plusDays(365).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        }
         return Jwts.builder()
                 .subject(identity.getClientId())
                 .issuer("www.auth.hoc.com")
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+1000*60*60))// set expiry as 60 mins
+                .expiration(expiry)// set expiry as 60 mins
                 .signWith(getSecretKey())
                 .compact();
     }

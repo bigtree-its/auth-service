@@ -33,4 +33,5 @@ public class AuthController {
         loginService.logout(form);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }

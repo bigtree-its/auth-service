@@ -60,10 +60,8 @@ public class LoginService {
         TokenResponse response = null;
 
         Map<String,String> parameters = new HashMap<>();
-        Iterator<String> it = formParams.keySet().iterator();
-        while(it.hasNext()){
-            String theKey = it.next();
-            parameters.put(theKey,formParams.getFirst(theKey));
+        for (String theKey : formParams.keySet()) {
+            parameters.put(theKey, formParams.getFirst(theKey));
         }
 
         final TokenRequest tokenRequest = prepareRequest(parameters);
@@ -71,7 +69,7 @@ public class LoginService {
             throw new ApiException(HttpStatus.BAD_REQUEST, "grant_type is mandatory");
         }
         if (Objects.isNull(tokenRequest.getClientType())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "user_type is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "client_type is mandatory");
         }
         if ( !StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.CLIENT_CREDENTIALS.name()) && !StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.PASSWORD.name())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid Grant Type");
@@ -210,16 +208,16 @@ public class LoginService {
 
     private void validateClientCredentials(TokenRequest tokenRequest) {
         if ( StringUtils.isEmpty(tokenRequest.getClientAssertion()) && StringUtils.isEmpty(tokenRequest.getClientId())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client ID or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.name());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client ID or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
         if ( !StringUtils.isEmpty(tokenRequest.getClientId()) && (StringUtils.isEmpty(tokenRequest.getClientSecret()) && StringUtils.isEmpty(tokenRequest.getClientAssertion()) )){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client Secret or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.name());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client Secret or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
         if ( !StringUtils.isEmpty(tokenRequest.getClientAssertion()) && StringUtils.isEmpty(tokenRequest.getClientAssertionType())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion Type is mandatory for "+GrantType.CLIENT_CREDENTIALS.name());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion Type is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
         if ( !StringUtils.isEmpty(tokenRequest.getClientAssertionType()) && StringUtils.isEmpty(tokenRequest.getClientAssertion())  ){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.name());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
     }
 

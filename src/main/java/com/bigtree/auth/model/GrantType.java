@@ -1,5 +1,8 @@
 package com.bigtree.auth.model;
 
+import lombok.Getter;
+
+@Getter
 public enum GrantType {
 
     // enum constants calling the enum constructors
@@ -13,7 +16,4 @@ public enum GrantType {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
 }

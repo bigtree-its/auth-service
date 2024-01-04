@@ -22,7 +22,7 @@ class AuthApplicationTests {
 
 	@Test
 	void testSaveOrUpdateUser() {
-		UserRegistrationRequest userRegReq = DummyData.createRegisterRequest(ClientType.CUSTOMER);
+		UserRegistrationRequest userRegReq = DummyData.createRegisterRequest(ClientType.Customer);
 		userService.registerUser(userRegReq);
 		Identity saved = userService.findByEmailAndUserType(userRegReq.getEmail(),userRegReq.getClientType());
 		Assertions.notNull("Identity not saved", saved);

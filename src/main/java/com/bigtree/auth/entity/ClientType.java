@@ -2,11 +2,11 @@ package com.bigtree.auth.entity;
 
 public enum ClientType {
 
-    CUSTOMER("Customer", "cus"),
-    SUPPLIER("Supplier", "sup"),
-    EMPLOYEE("Employee", "emp"),
-    CUSTOMER_APP("CustomerApp", "capp"),
-    SUPPLIER_APP("SupplierApp", "sapp");
+    Customer("Customer", "cus"),
+    Supplier("Supplier", "sup"),
+    Employee("Employee", "emp"),
+    CustomerApp("CustomerApp", "capp"),
+    SupplierApp("SupplierApp", "sapp");
 
     private final String name;
     private final String code;

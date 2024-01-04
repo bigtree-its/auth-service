@@ -29,11 +29,11 @@ public class DummyData {
     public static UserRegistrationRequest createRegisterRequest(ClientType clientType) {
         String clientEmail = "";
         switch (clientType){
-            case CUSTOMER -> clientEmail = CUSTOMER_EMAIL;
-            case SUPPLIER -> clientEmail = SUPPLIER_EMAIL;
-            case EMPLOYEE -> clientEmail = EMPLOYEE_EMAIL;
-            case CUSTOMER_APP -> clientEmail = CUSTOMER_APP_EMAIL;
-            case SUPPLIER_APP -> clientEmail = SUPPLIER_APP_EMAIL;
+            case Customer -> clientEmail = CUSTOMER_EMAIL;
+            case Supplier -> clientEmail = SUPPLIER_EMAIL;
+            case Employee -> clientEmail = EMPLOYEE_EMAIL;
+            case CustomerApp -> clientEmail = CUSTOMER_APP_EMAIL;
+            case SupplierApp -> clientEmail = SUPPLIER_APP_EMAIL;
         }
         return UserRegistrationRequest.builder()
                 .clientType(clientType)

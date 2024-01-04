@@ -25,7 +25,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
         long startTime = (long) request.getAttribute("startTime");
         long endTime = System.currentTimeMillis();
         long timeTaken = endTime - startTime;
-        log.info("Response Headers: ", response.getHeaderNames());
+        log.info("Response Headers: {}", response.getHeaderNames());
         log.info("Request processing completed for URL: {}", request.getRequestURL().toString() + ". Total Time Taken: " + timeTaken + "ms");
     }
 }
