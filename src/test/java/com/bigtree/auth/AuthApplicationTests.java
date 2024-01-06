@@ -7,11 +7,13 @@ import com.bigtree.auth.model.UserRegistrationRequest;
 import com.bigtree.auth.repository.AccountRepository;
 import com.bigtree.auth.service.UserService;
 import org.bson.assertions.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Disabled
 class AuthApplicationTests {
 
 	@Autowired

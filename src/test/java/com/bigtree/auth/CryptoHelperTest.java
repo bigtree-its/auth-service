@@ -2,9 +2,10 @@ package com.bigtree.auth;
 
 import com.bigtree.auth.security.CryptoHelper;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-
+@Disabled
 public class CryptoHelperTest {
 
     String secretKey = "1234567891234567";

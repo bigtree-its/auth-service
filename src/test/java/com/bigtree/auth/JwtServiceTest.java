@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@Disabled
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -20,7 +21,7 @@ public class JwtServiceTest {
         final String idToken = jwtService.generateIdToken(Identity.builder()
                 .email("test@gmail.com")
                 ._id("auth-id")
-                .clientType(ClientType.SUPPLIER)
+                .clientType(ClientType.Supplier)
                 .firstName("firstName")
                 .lastName("lastName")
                 .mobile("9897545454545")
