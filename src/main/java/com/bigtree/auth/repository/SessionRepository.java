@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SessionRepository extends MongoRepository<Session, Session> {
+public interface SessionRepository extends MongoRepository<Session, String> {
 
     List<Session> findByUserId(String userId);
 }
