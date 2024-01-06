@@ -55,3 +55,12 @@ tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
 }
+
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+      'Main-Class': 'com.bigtree.auth.AuthApplication'
+    )
+  }
+}
