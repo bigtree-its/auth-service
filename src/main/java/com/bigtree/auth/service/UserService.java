@@ -16,11 +16,11 @@ import com.bigtree.auth.security.JwtService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -51,16 +51,16 @@ public class UserService {
         if (optional.isPresent()) {
             log.info("Identity already exist. Updating");
             Identity exist = optional.get();
-            if (StringUtils.hasLength(identity.getFirstName())) {
+            if (StringUtils.isNotEmpty(identity.getFirstName())) {
                 exist.setFirstName(identity.getFirstName());
             }
-            if (StringUtils.hasLength(identity.getLastName())) {
+            if (StringUtils.isNotEmpty(identity.getLastName())) {
                 exist.setLastName(identity.getLastName());
             }
-            if (StringUtils.hasLength(identity.getMobile())) {
+            if (StringUtils.isNotEmpty(identity.getMobile())) {
                 exist.setMobile(identity.getMobile());
             }
-            if (StringUtils.hasLength(identity.getEmail())) {
+            if (StringUtils.isNotEmpty(identity.getEmail())) {
                 exist.setEmail(identity.getEmail());
             }
             Identity updated = repository.save(exist);
@@ -104,15 +104,15 @@ public class UserService {
             log.error("Identity type is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client type is mandatory");
         }
-        if (!StringUtils.hasLength(req.getEmail())) {
+        if (StringUtils.isEmpty(req.getEmail())) {
             log.error("Identity email is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client email is mandatory");
         }
-        if (!StringUtils.hasLength(req.getMobile())) {
+        if (StringUtils.isEmpty(req.getMobile())) {
             log.error("Identity mobile is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client mobile is mandatory");
         }
-        if (req.getClientType() != ClientType.CustomerApp && req.getClientType() != ClientType.SupplierApp && !StringUtils.hasLength(req.getPassword())) {
+        if (req.getClientType() != ClientType.CustomerApp && req.getClientType() != ClientType.SupplierApp && StringUtils.isEmpty(req.getPassword())) {
             log.error("Identity password is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Client password is mandatory");
         }
@@ -140,9 +140,10 @@ public class UserService {
             log.info("New identity created {}", identity.get_id());
             Account account = accountRepository.save(Account.builder()
                     .identity(identity.get_id())
-                    .password(clientSecret != null ? clientSecret : req.getPassword())
+                    .password(StringUtils.isEmpty(clientSecret)?  req.getPassword(): clientSecret)
                     .passwordChanged(LocalDateTime.now())
                     .build());
+                    log.info("Saving new account frm req {}, account {}", req.getPassword(), account.getPassword());
             if (account.get_id() != null) {
                 log.info("Account created");
                 if (req.getClientType() == ClientType.CustomerApp || req.getClientType() == ClientType.SupplierApp) {
@@ -191,7 +192,7 @@ public class UserService {
             parameters.put(theKey, formParams.getFirst(theKey));
         }
         AuthRequest authRequest = prepareRequest(parameters);
-        if ( StringUtils.hasLength(authRequest.getClientEmail())){
+        if ( StringUtils.isNotEmpty(authRequest.getClientEmail())){
             Identity identity = repository.findByEmail(authRequest.getClientEmail());
             if ( identity != null){
                 log.info("Found a client with email {}", authRequest.getClientEmail());

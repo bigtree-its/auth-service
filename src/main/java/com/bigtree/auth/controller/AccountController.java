@@ -31,4 +31,11 @@ public class AccountController {
         repository.deleteAll();
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id){
+        log.info("Received request to delete an account {}", id);
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

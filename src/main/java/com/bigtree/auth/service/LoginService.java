@@ -100,6 +100,7 @@ public class LoginService {
         }
         identity = identityRepository.findByEmailAndClientType(tokenRequest.getUsername(), tokenRequest.getClientType());
         if ( identity != null) {
+            log.info("Found an identity {}", tokenRequest.getUsername());
             Account account = accountRepository.findByIdentityAndPassword(identity.get_id(), tokenRequest.getPassword());
             if (account != null) {
                 response = generateToken(identity);
