@@ -88,7 +88,7 @@ public class LoginServiceTest {
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
         Assertions.assertTrue(login.getSuccess());
-        Assertions.assertNotNull(login.getAccess_token());
+        Assertions.assertNotNull(login.getAccessToken());
 
     }
 
@@ -100,7 +100,7 @@ public class LoginServiceTest {
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
         Assertions.assertFalse(login.getSuccess());
-        Assertions.assertNull(login.getAccess_token());
+        Assertions.assertNull(login.getAccessToken());
 
     }
 
@@ -127,6 +127,6 @@ public class LoginServiceTest {
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
         Assertions.assertTrue(login.getSuccess());
-        Assertions.assertNotNull(login.getAccess_token());
+        Assertions.assertNotNull(login.getAccessToken());
     }
 }

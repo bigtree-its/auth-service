@@ -7,8 +7,8 @@ import lombok.Data;
 @Builder
 public class TokenResponse {
 
-    private String id_token;
-    private String access_token;
+    private String idToken;
+    private String accessToken;
     private Boolean success;
     private String message;
 }

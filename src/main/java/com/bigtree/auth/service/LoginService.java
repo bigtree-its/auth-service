@@ -201,8 +201,8 @@ public class LoginService {
         sessionRepository.save(session);
         response = TokenResponse.builder()
                 .success(true)
-                .access_token(accessToken)
-                .id_token(idToken)
+                .accessToken(accessToken)
+                .idToken(idToken)
                 .build();
         return response;
     }
