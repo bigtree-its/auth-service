@@ -62,7 +62,7 @@ public class JwtService {
         claims.put("firstName", identity.getFirstName());
         claims.put("lastName", identity.getLastName());
         claims.put("clientId", identity.getClientId());
-        claims.put("collectionId", identity.get_id());
+        claims.put("recordId", identity.get_id());
         claims.put("clientType", identity.getClientType().getName());
         claims.put("email", identity.getEmail());
         claims.put("mobile", identity.getMobile());
