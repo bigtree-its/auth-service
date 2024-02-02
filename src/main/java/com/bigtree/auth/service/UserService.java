@@ -239,4 +239,8 @@ public class UserService {
         log.info("The Auth Request {}", authRequest.toString());
         return authRequest;
     }
+
+    public Identity updatePersonal(MultiValueMap form) {
+        return null;
+    }
 }

@@ -287,5 +287,7 @@ public class LoginService {
 
     }
 
-
+    public Identity updatePassword(MultiValueMap form) {
+        return null;
+    }
 }

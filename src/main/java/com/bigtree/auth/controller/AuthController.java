@@ -1,5 +1,6 @@
 package com.bigtree.auth.controller;
 
+import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.model.TokenResponse;
 import com.bigtree.auth.service.LoginService;
 import jakarta.validation.Valid;
@@ -20,6 +21,8 @@ public class AuthController {
     @Autowired
     LoginService loginService;
 
+
+
     @PostMapping(value = "/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TokenResponse> token(@RequestHeader("User-Agent") String userAgent, @Valid @RequestParam MultiValueMap form){
         log.info("Received request to token for {} from {}", form.toString(), userAgent);
@@ -32,6 +35,13 @@ public class AuthController {
         log.info("Received request to revoke token {}",form.toString());
         loginService.logout(form);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update_password", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Identity> updatePassword(@RequestHeader("User-Agent") String userAgent, @Valid @RequestParam MultiValueMap form){
+        log.info("Received request to update personal details of user {}", userAgent);
+        Identity status = loginService.updatePassword(form);
+        return ResponseEntity.status(HttpStatus.OK).body(status);
     }
 
 }

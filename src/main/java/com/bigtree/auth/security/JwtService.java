@@ -2,10 +2,12 @@ package com.bigtree.auth.security;
 
 import com.bigtree.auth.entity.ClientType;
 import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.error.ApiException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -38,6 +40,17 @@ public class JwtService {
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
+    }
+
+
+    public void authenticate(String customerId, String token) {
+        Claims claims = validateAccessToken(token);
+        if ( claims == null){
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Unauthorised");
+        }
+        if (extractUsername(token).equalsIgnoreCase(customerId)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Unauthorised");
+        }
     }
 
     private Claims extractAllClaims(String token) {
@@ -75,9 +88,14 @@ public class JwtService {
         if ( identity.getClientType() == ClientType.CustomerApp || identity.getClientType() == ClientType.SupplierApp){
             expiry = Date.from(LocalDate.now().plusDays(365).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("clientId", identity.getClientId());
+        claims.put("recordId", identity.get_id());
+        claims.put("clientType", identity.getClientType().getName());
         return Jwts.builder()
-                .subject(identity.getClientId())
-                .issuer("www.auth.hoc.com")
+                .claims(claims)
+                .subject(identity.get_id())
+                .issuer("www.auth.dudul.com")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(expiry)// set expiry as 60 mins
                 .signWith(getSecretKey())
@@ -111,15 +129,13 @@ public class JwtService {
             final Claims claims = Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(token).getPayload();
             return claims;
         } catch (ExpiredJwtException ex) {
-            log.error("JWT expired", ex.getMessage());
+            log.error("JWT expired {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            log.error("Token is null, empty or only whitespace", ex.getMessage());
+            log.error("Token is null, empty or only whitespace {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
             log.error("JWT is invalid", ex);
         } catch (UnsupportedJwtException ex) {
             log.error("JWT is not supported", ex);
-        } catch (SignatureException ex) {
-            log.error("Signature validation failed");
         }
 
         return null;
