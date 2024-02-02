@@ -15,7 +15,7 @@ public class CustomerPreferences {
 
     @MongoId
     private String _id;
-    private String userId;
+    private String customerId;
     private Boolean communicationViaEmail;
     private Boolean communicationViaMobile;
     private List<String> cuisines;

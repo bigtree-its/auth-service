@@ -1,13 +1,20 @@
 package com.bigtree.auth.config;
 
+import com.bigtree.auth.security.JwtAuthenticationEntryPoint;
+import com.bigtree.auth.security.JwtRequestFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,6 +25,12 @@ import java.util.Arrays;
 @EnableWebSecurity
 @Slf4j
 public class WebSecurity {
+
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -36,13 +49,21 @@ public class WebSecurity {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         log.info("SecurityFilterChain....");
-
+//        http.addFilterBefore(jwtRequestFilter);
+        http.addFilterAfter(
+                jwtRequestFilter, BasicAuthenticationFilter.class);
         http.cors(Customizer.withDefaults())
-                .authorizeHttpRequests(req-> req.anyRequest().permitAll())
+                .authorizeHttpRequests(req->req.requestMatchers("/token").permitAll())
+                .authorizeHttpRequests(req-> req.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
 
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
