@@ -200,9 +200,7 @@ public class LoginService {
         session.setToken(idToken);
         sessionRepository.save(session);
         response = TokenResponse.builder()
-                .success(true)
                 .accessToken(accessToken)
-                .idToken(idToken)
                 .build();
         return response;
     }

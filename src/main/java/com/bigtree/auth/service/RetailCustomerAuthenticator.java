@@ -25,8 +25,10 @@ public class RetailCustomerAuthenticator implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UsernamePasswordAuthenticationToken request = (UsernamePasswordAuthenticationToken) authentication;
+       log.info("Authenticating retail customer {}", request.getPrincipal());
         Identity customer = identityRepository.findByEmail((String) request.getPrincipal());
         if ( customer != null){
+            log.info("Customer found.. {}", customer);
             Account account = accountRepository.findByIdentityAndPassword(customer.get_id(), (String) request.getCredentials());
             if ( account != null){
                 log.info("Customer authenticated");

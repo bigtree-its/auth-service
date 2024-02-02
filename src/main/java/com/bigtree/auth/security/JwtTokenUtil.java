@@ -3,6 +3,7 @@ package com.bigtree.auth.security;
 
 import com.bigtree.auth.entity.Identity;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -2550185165626007488L;
@@ -49,6 +51,7 @@ public class JwtTokenUtil implements Serializable {
 
     //generate token for user
     public String generateToken(Identity identity) {
+        log.info("Generating access token..");
         Map<String, Object> claims = new HashMap<>();
         claims.put("firstName", identity.getFirstName());
         claims.put("lastName", identity.getLastName());
@@ -67,13 +70,21 @@ public class JwtTokenUtil implements Serializable {
     //   compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(SignatureAlgorithm.HS512, SECRET).compact();
+                .signWith(SignatureAlgorithm.HS256, SECRET).compact();
     }
 
     //validate token
     public Boolean validateToken(String token, Identity identity) {
+        log.info("Validating token");
+        if (isTokenExpired(token)){
+            log.info("Token expired...");
+            return false;
+        }
         final String userId = getUserId(token);
         return (userId.equals(identity.get_id()) && !isTokenExpired(token));
     }

@@ -50,13 +50,13 @@ public class WebSecurity {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         log.info("SecurityFilterChain....");
 //        http.addFilterBefore(jwtRequestFilter);
-        http.addFilterAfter(
-                jwtRequestFilter, BasicAuthenticationFilter.class);
         http.cors(Customizer.withDefaults())
-                .authorizeHttpRequests(req->req.requestMatchers("/token").permitAll())
+                .authorizeHttpRequests(req->req.requestMatchers("/customer/token").permitAll())
                 .authorizeHttpRequests(req-> req.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
+        http.addFilterAfter(
+                jwtRequestFilter, BasicAuthenticationFilter.class);
         return http.build();
 
     }
