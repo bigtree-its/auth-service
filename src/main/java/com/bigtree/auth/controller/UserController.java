@@ -1,9 +1,7 @@
 package com.bigtree.auth.controller;
 
-import com.bigtree.auth.entity.CustomerPreferences;
 import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.entity.Session;
-import com.bigtree.auth.service.CustomerPreferenceService;
 import com.bigtree.auth.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import com.bigtree.auth.error.ApiException;
 import com.bigtree.auth.model.*;
 import com.bigtree.auth.service.LoginService;
 import com.bigtree.auth.service.UserService;

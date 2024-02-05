@@ -45,14 +45,18 @@ public class WebSecurity {
         return source;
     }
 
-
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         log.info("SecurityFilterChain....");
-//        http.addFilterBefore(jwtRequestFilter);
+        // http.addFilterBefore(jwtRequestFilter);
         http.cors(Customizer.withDefaults())
-                .authorizeHttpRequests(req->req.requestMatchers("/customer/token").permitAll())
-                .authorizeHttpRequests(req-> req.anyRequest().authenticated())
+                .authorizeHttpRequests(req -> {
+                    req.requestMatchers("/customer/token").permitAll();
+                    req.requestMatchers("/api/oauth/token").permitAll();
+                    req.requestMatchers("/api/users/private-key-jwt").permitAll();
+                    req.anyRequest().authenticated();
+                })
+                // .authorizeHttpRequests(req-> req.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
         http.addFilterAfter(
