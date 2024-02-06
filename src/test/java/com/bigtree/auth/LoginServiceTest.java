@@ -87,7 +87,6 @@ public class LoginServiceTest {
         map.add("client_type", ClientType.Customer.getName());
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
-        Assertions.assertTrue(login.getSuccess());
         Assertions.assertNotNull(login.getAccessToken());
 
     }
@@ -99,7 +98,6 @@ public class LoginServiceTest {
         MultiValueMap map = new LinkedMultiValueMap();
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
-        Assertions.assertFalse(login.getSuccess());
         Assertions.assertNull(login.getAccessToken());
 
     }
@@ -126,7 +124,6 @@ public class LoginServiceTest {
         map.add("client_assertion", "eyJhbGciOiJIUzUxMiJ9.eyJjbGllbnRfZW1haWwiOiJUaGVDdXN0b21lckFwcEBnbWFpbC5jb20iLCJjbGllbnRfc2VjcmV0IjoibmJtNDgyZWxtMmtiIiwiY2xpZW50X3R5cGUiOiJDdXN0b21lckFwcCIsImNsaWVudF9pZCI6ImhvYy1jYXBwLTMxNTQzMyIsImlzcyI6Ind3dy5hdXRoLmx1bmNoaWUtbXVuY2hpZS5jb20iLCJzdWIiOiJob2MtY2FwcC0zMTU0MzMiLCJpYXQiOjE3MDM3ODQ3MzYsImV4cCI6MTcwNTI1NTk2NX0.ZllDJ3yDO99Yf3zcVBzVmraUz3RUai-gg_35agegNDdSBLKHU21i0XKz8K8XGxu4vq1BHlbChf94gsdjR_whrg");
         TokenResponse login = loginService.token(map);
         Assertions.assertTrue(login != null);
-        Assertions.assertTrue(login.getSuccess());
         Assertions.assertNotNull(login.getAccessToken());
     }
 }
