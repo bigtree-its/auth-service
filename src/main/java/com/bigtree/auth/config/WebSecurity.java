@@ -1,7 +1,7 @@
 package com.bigtree.auth.config;
 
 import com.bigtree.auth.security.JwtAuthenticationEntryPoint;
-import com.bigtree.auth.security.JwtRequestFilter;
+import com.bigtree.auth.security.AuthorizationFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,7 +29,7 @@ public class WebSecurity {
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+    private AuthorizationFilter jwtRequestFilter;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -51,8 +50,8 @@ public class WebSecurity {
         // http.addFilterBefore(jwtRequestFilter);
         http.cors(Customizer.withDefaults())
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/customer/token").permitAll();
-                    req.requestMatchers("/api/oauth/token").permitAll();
+                    req.requestMatchers("/authenticate/customer/token").permitAll();
+                    req.requestMatchers("/authenticate/machine/token").permitAll();
                     req.requestMatchers("/api/users/private-key-jwt").permitAll();
                     req.anyRequest().authenticated();
                 })

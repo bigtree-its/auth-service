@@ -1,6 +1,6 @@
 package com.bigtree.auth;
 
-import com.bigtree.auth.controller.AuthController;
+import com.bigtree.auth.controller.MachineAuthController;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +11,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(AuthController.class)
+@WebMvcTest(MachineAuthController.class)
 @Disabled
-public class AuthControllerTest {
+public class MachineAuthControllerTest {
 
     @Autowired
     MockMvc mockMvc;

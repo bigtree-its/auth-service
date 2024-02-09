@@ -24,13 +24,9 @@ public class CustomerPreferenceController {
     @Autowired
     CustomerPreferenceService customerPreferenceService;
 
-    @Autowired
-    JwtService jwtService;
-
     @GetMapping("/{customerId}/preferences")
     public ResponseEntity<CustomerPreferences> get(@PathVariable String customerId, @RequestHeader("Authorization") String token){
         log.info("Received request to get customer preference for {}", customerId);
-        jwtService.authenticate(customerId, token);
         CustomerPreferences customerPreferences = customerPreferenceService.get(customerId);
         return ResponseEntity.ok().body(customerPreferences);
     }
@@ -43,7 +39,7 @@ public class CustomerPreferenceController {
     }
 
     @PostMapping(value = "/{customerId}/preferences", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomerPreferences> createPreferences(@PathVariable String customerId, @RequestHeader("Authorization") String authorization, @RequestBody CustomerPreferences customerPreferences){
+    public ResponseEntity<CustomerPreferences> createPreferences(@PathVariable String customerId, @RequestBody CustomerPreferences customerPreferences){
         log.info("Received request to update customer preference for {}", customerId);
         CustomerPreferences preferences = customerPreferenceService.create(customerId, customerPreferences);
         return ResponseEntity.status(HttpStatus.OK).body(preferences);

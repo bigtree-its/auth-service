@@ -51,21 +51,6 @@ public class UserController {
         return ResponseEntity.ok().body(identity);
     }
 
-    @PostMapping(value = "/password-reset/initiate", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ApiResponse> passwordResetInitiate(@Valid @RequestBody PasswordResetInitiate req){
-        log.info("Received password reset initiate request for user {}", req.getEmail());
-        loginService.passwordResetInitiate(req.getEmail());
-        ApiResponse apiResponse = ApiResponse.builder().message("An OTP sent to your registered email address. Please use that to reset your password").build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    }
-    @PostMapping(value = "/password-reset/submit", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<ApiResponse> passwordResetSubmit(@Valid @RequestBody PasswordResetSubmit req){
-        log.info("Received password reset request for user {}", req.getEmail());
-        loginService.passwordResetSubmit(req);
-        ApiResponse apiResponse = ApiResponse.builder().message("Your password has been successfully changed.").build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    }
-
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest){
         log.info("Received request to signup new user {}", userRegistrationRequest);

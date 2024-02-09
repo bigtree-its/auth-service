@@ -16,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Disabled
 @SpringBootTest(classes = AuthApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthControllerIntegrationTest {
+public class MachineAuthControllerIntegrationTest {
 
     @LocalServerPort
     private int port;

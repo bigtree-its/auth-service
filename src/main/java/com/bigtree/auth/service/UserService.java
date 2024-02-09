@@ -13,6 +13,7 @@ import com.bigtree.auth.repository.AccountRepository;
 import com.bigtree.auth.repository.IdentityRepository;
 import com.bigtree.auth.security.CryptoHelper;
 import com.bigtree.auth.security.JwtService;
+import com.bigtree.auth.security.JwtTokenUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -36,10 +37,7 @@ public class UserService {
     AccountRepository accountRepository;
 
     @Autowired
-    CryptoHelper cryptoHelper;
-
-    @Autowired
-    JwtService jwtService;
+    JwtTokenUtil jwtService;
 
     public List<Identity> getUsers() {
         log.info("Fetching all users");

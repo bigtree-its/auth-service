@@ -9,6 +9,7 @@ import com.bigtree.auth.repository.AccountRepository;
 import com.bigtree.auth.repository.IdentityRepository;
 import com.bigtree.auth.security.CryptoHelper;
 import com.bigtree.auth.security.JwtService;
+import com.bigtree.auth.security.JwtTokenUtil;
 import com.mongodb.client.result.DeleteResult;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ public class LoginService {
     PasswordResetOtpRepository resetRepository;
 
     @Autowired
-    JwtService jwtService;
+    JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     EmailService emailService;
@@ -84,10 +85,6 @@ public class LoginService {
             }
 
         }
-        // Grant Type password
-        if (StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.PASSWORD.name()) ) {
-            response = authTreePassword(tokenRequest);
-        }
 
         return response;
     }
@@ -117,13 +114,15 @@ public class LoginService {
     }
 
     private TokenResponse authTreeClientAssertion(TokenRequest tokenRequest) {
+        log.info("Authenticating machine user");
         Identity identity;
         TokenResponse response;
-        final Claims claims = jwtService.validateAccessToken(tokenRequest.getClientAssertion());
-        if (claims == null){
+        Boolean tokenExpired = jwtTokenUtil.isTokenExpired(tokenRequest.getClientAssertion());
+        if (tokenExpired == null || tokenExpired){
             log.error("Authentication failed for client {}",  tokenRequest.getClientId());
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the client "+ tokenRequest.getClientId());
         }
+        Claims claims = jwtTokenUtil.getAllClaimsFromToken(tokenRequest.getClientAssertion());
         final String clientId = claims.get("client_id", String.class);
         final String clientSecret = claims.get("client_secret", String.class);
         final String clientType = claims.get("client_type", String.class);
@@ -192,12 +191,11 @@ public class LoginService {
 
     private TokenResponse generateToken(Identity identity) {
         TokenResponse response;
-        final String idToken = jwtService.generateIdToken(identity);
-        final String accessToken = jwtService.generateAccessToken(identity);
+        final String accessToken = jwtTokenUtil.generateToken(identity);
         final Session session = Session.builder().build();
         session.setStart(LocalDateTime.now());
         session.setUserId(identity.get_id());
-        session.setToken(idToken);
+        session.setToken(accessToken);
         sessionRepository.save(session);
         response = TokenResponse.builder()
                 .accessToken(accessToken)

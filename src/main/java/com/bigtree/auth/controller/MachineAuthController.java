@@ -2,7 +2,9 @@ package com.bigtree.auth.controller;
 
 import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.model.TokenResponse;
+import com.bigtree.auth.security.JwtTokenUtil;
 import com.bigtree.auth.service.LoginService;
+import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/oauth")
+@RequestMapping("/authenticate/machine")
 @CrossOrigin(origins = "*")
-public class AuthController {
+public class MachineAuthController {
 
     @Autowired
     LoginService loginService;
 
+    @Autowired
+    JwtTokenUtil jwtTokenUtil;
 
 
     @PostMapping(value = "/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,11 +41,14 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(value = "/update_password", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Identity> updatePassword(@RequestHeader("User-Agent") String userAgent, @Valid @RequestParam MultiValueMap form){
-        log.info("Received request to update personal details of user {}", userAgent);
-        Identity status = loginService.updatePassword(form);
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+    @PostMapping(value = "/verify")
+    public ResponseEntity<?> verify(@RequestHeader("Authorization") String authorization){
+        log.info("Received request to verify token {}", authorization);
+        String jwtToken = authorization.substring(7);
+        Claims claims = jwtTokenUtil.getAllClaimsFromToken(jwtToken);
+        Boolean tokenExpired = jwtTokenUtil.isTokenExpired(jwtToken);
+        log.info("Claims {}", claims.toString());
+        return ResponseEntity.status(tokenExpired?HttpStatus.OK: HttpStatus.UNAUTHORIZED).body(tokenExpired? "OK":"Unauthorized");
     }
 
 }
