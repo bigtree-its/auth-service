@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface CustomerPreferenceRepository extends MongoRepository<CustomerPreferences, String> {
 
     CustomerPreferences findByCustomerId(String customerId);
+
+    void deleteByCustomerId(String customerId);
 }

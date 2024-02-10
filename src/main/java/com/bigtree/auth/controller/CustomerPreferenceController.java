@@ -18,30 +18,37 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @Slf4j
 @RequestMapping("/api/customers")
-@CrossOrigin(origins = "*")
+@CrossOrigin
 public class CustomerPreferenceController {
 
     @Autowired
     CustomerPreferenceService customerPreferenceService;
 
     @GetMapping("/{customerId}/preferences")
-    public ResponseEntity<CustomerPreferences> get(@PathVariable String customerId, @RequestHeader("Authorization") String token){
+    public ResponseEntity<CustomerPreferences> get(@PathVariable String customerId){
         log.info("Received request to get customer preference for {}", customerId);
         CustomerPreferences customerPreferences = customerPreferenceService.get(customerId);
         return ResponseEntity.ok().body(customerPreferences);
     }
 
-    @PutMapping(value = "/{customerId}/preferences", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomerPreferences> updatePreferences(@PathVariable String customerId, @RequestHeader("Authorization") String authorization, @RequestBody CustomerPreferences customerPreferences){
-        log.info("Received request to update customer preference for {}", customerId);
-        CustomerPreferences preferences = customerPreferenceService.update(customerId, customerPreferences);
+    @PutMapping(value = "/preferences", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomerPreferences> updatePreferences(@RequestBody CustomerPreferences customerPreferences){
+        log.info("Received request to update customer preference for {}", customerPreferences.getCustomerId());
+        CustomerPreferences preferences = customerPreferenceService.createOrUpdate(customerPreferences);
         return ResponseEntity.status(HttpStatus.OK).body(preferences);
     }
 
-    @PostMapping(value = "/{customerId}/preferences", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CustomerPreferences> createPreferences(@PathVariable String customerId, @RequestBody CustomerPreferences customerPreferences){
-        log.info("Received request to update customer preference for {}", customerId);
-        CustomerPreferences preferences = customerPreferenceService.create(customerId, customerPreferences);
+    @PostMapping(value = "/preferences", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CustomerPreferences> createPreferences(@RequestBody CustomerPreferences customerPreferences){
+        log.info("Received request to update customer preference for {}", customerPreferences.getCustomerId());
+        CustomerPreferences preferences = customerPreferenceService.createOrUpdate(customerPreferences);
         return ResponseEntity.status(HttpStatus.OK).body(preferences);
+    }
+
+    @DeleteMapping("/{customerId}/preferences")
+    public ResponseEntity<CustomerPreferences> delete(@PathVariable String customerId){
+        log.info("Received request to delete customer preference for {}", customerId);
+        customerPreferenceService.delete(customerId);
+        return ResponseEntity.ok().build();
     }
 }

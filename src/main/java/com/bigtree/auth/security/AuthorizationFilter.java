@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -29,11 +31,29 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Value("#{'${auth.permitAll}'.split(',')}")
+    List<String> permitAll;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        log.info("Authorizing the request.");
+        String servletPath = request.getServletPath();
+        log.info("Authorizing the request {}", servletPath);
+        if( permitAll.contains(servletPath) ){
+            log.info("The requested url is whitelisted..");
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                    "PermitAll", null, null);
+            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            log.info("Authorised");
+        }else{
+            authorise(request);
+        }
+
+        chain.doFilter(request, response);
+    }
+
+    private void authorise(HttpServletRequest request){
         final String requestTokenHeader = request.getHeader("Authorization");
 
         String username = null;
@@ -48,7 +68,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 subjectType = jwtTokenUtil.getSubjectType(jwtToken);
                 log.info("Subject {}, SubjectType {}", username, subjectType);
             } catch (IllegalArgumentException e) {
-               log.error("Unable to get JWT Token");
+                log.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
                 log.error("JWT Token has expired");
             }
@@ -95,7 +115,5 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             }
 
         }
-        chain.doFilter(request, response);
     }
-
 }

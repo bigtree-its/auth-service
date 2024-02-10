@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Slf4j
-@RequestMapping("/password/customer")
+@RequestMapping("/passwords")
 public class PasswordController {
 
     @Autowired

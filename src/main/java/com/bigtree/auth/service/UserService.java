@@ -39,6 +39,9 @@ public class UserService {
     @Autowired
     JwtTokenUtil jwtService;
 
+    @Autowired
+    EmailService emailService;
+
     public List<Identity> getUsers() {
         log.info("Fetching all users");
         return repository.findAll();
@@ -119,6 +122,7 @@ public class UserService {
             log.error("Identity already exist");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Identity already exist");
         }
+        String message = "";
         String clientId = generateClientId(req.getClientType());
         String clientSecret = "";
         if (req.getClientType() == ClientType.CustomerApp || req.getClientType() == ClientType.SupplierApp) {
@@ -141,22 +145,21 @@ public class UserService {
                     .password(StringUtils.isEmpty(clientSecret)?  req.getPassword(): clientSecret)
                     .passwordChanged(LocalDateTime.now())
                     .build());
-                    log.info("Saving new account frm req {}, account {}", req.getPassword(), account.getPassword());
             if (account.get_id() != null) {
-                log.info("Account created");
+                log.info("Account secrets created for identity {}", identity.get_id());
                 if (req.getClientType() == ClientType.CustomerApp || req.getClientType() == ClientType.SupplierApp) {
                     Map<String, String> claims = new HashMap<>();
                     claims.put("client_id", identity.getClientId());
                     claims.put("client_secret", account.getPassword());
                     claims.put("client_type", identity.getClientType().getName());
                     claims.put("client_email", identity.getEmail());
-                    final String privateKeyJwt = jwtService.createPrivateKeyJwt(claims, identity);
-                    return ApiResponse.builder().endpoint("/register").message(privateKeyJwt).build();
+                    message = jwtService.createPrivateKeyJwt(claims, identity);
                 }
-                return ApiResponse.builder().endpoint("/register").message("Created").build();
+                emailService.senSignupCompletion(identity);
+                return ApiResponse.builder().endpoint("/register").message(message).build();
             }
         }
-        return ApiResponse.builder().endpoint("/register").message("").build();
+        throw new ApiException(HttpStatus.BAD_REQUEST, "Could not complete your request. Please reach out to customer support");
     }
 
     private String generateClientId(ClientType clientType) {

@@ -1,6 +1,7 @@
 package com.bigtree.auth.service;
 
 import com.bigtree.auth.config.ResourcesConfig;
+import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.security.CryptoHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -91,6 +92,17 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
             sendMail(email, "Your password has been changed | HouseOfChef", "password-reset-successful-email", params);
+        } catch (Exception e) {
+            log.error("Error when preparing mail message. {}", e.getMessage());
+        }
+    }
+
+    public void senSignupCompletion(Identity identity) {
+        log.info("Sending password confirmation email {}", identity.getEmail());
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("customerName", identity.getFullName());
+            sendMail(identity.getEmail(), "Welcome to Chumma", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

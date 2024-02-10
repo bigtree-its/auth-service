@@ -83,7 +83,6 @@ public class LoginService {
             }else  if ( StringUtils.isNotEmpty(tokenRequest.getClientAssertion())){
                 response = authTreeClientAssertion(tokenRequest);
             }
-
         }
 
         return response;
@@ -229,7 +228,7 @@ public class LoginService {
     }
 
     public PasswordResetOtp passwordResetInitiate(String email) {
-        Identity identity = identityRepository.findByClientId(email);
+        Identity identity = identityRepository.findByEmail(email);
         if (identity == null || identity.get_id() == null) {
             log.error("Identity not found {}", email);
             throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
@@ -249,7 +248,7 @@ public class LoginService {
 
     public void passwordResetSubmit(PasswordResetSubmit req) {
         try{
-            Identity identity = identityRepository.findByClientId(req.getEmail());
+            Identity identity = identityRepository.findByEmail(req.getEmail());
             if (identity == null || identity.get_id() == null) {
                 log.error("here was a problem. Cannot recognize the email. {}", req.getEmail());
                 throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
@@ -266,7 +265,7 @@ public class LoginService {
                         Query query = new Query();
                         query.addCriteria(Criteria.where("userId").is(identity.get_id()));
                         final DeleteResult deleteResult = mongoTemplate.remove(query, "resets");
-                        log.info("Password reset successful for auth {}. Removed old otp {}", identity.getEmail(), deleteResult.getDeletedCount());
+                        log.info("Password reset successful for customer {}. Removed old otp {}", identity.getEmail(), deleteResult.getDeletedCount());
                         emailService.setPasswordResetConfirmation(identity.getEmail(), identity.getFullName());
                         changed = true;
                         break;
@@ -279,8 +278,6 @@ public class LoginService {
         }catch (Exception e){
             throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Please contact customer support to reset your password.");
         }
-
-
     }
 
     public Identity updatePassword(MultiValueMap form) {
