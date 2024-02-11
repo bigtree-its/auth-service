@@ -66,11 +66,11 @@ public class UserController {
         return ResponseEntity.ok().body(updated);
     }
 
-    @PostMapping(value = "/update_personal", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Identity> updatePersonal(@RequestHeader("User-Agent") String userAgent, @Valid @RequestParam MultiValueMap form){
-        log.info("Received request to update personal details of user {}", userAgent);
-        Identity status = userService.updatePersonal(form);
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+    @PostMapping(value = "/update_personal",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Identity> updatePersonal(@RequestHeader("User-Agent") String userAgent, @RequestBody PersonalDetails personalDetails){
+        log.info("Received request to update personal details of user {}", personalDetails.getCustomerId());
+        Identity identity = userService.updatePersonal(personalDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(identity);
     }
 
     @DeleteMapping(value = "/{userId}")

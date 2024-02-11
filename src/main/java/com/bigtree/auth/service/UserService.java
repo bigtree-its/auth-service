@@ -5,10 +5,7 @@ import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.entity.Account;
 import com.bigtree.auth.entity.ClientType;
 import com.bigtree.auth.error.ApiException;
-import com.bigtree.auth.model.ApiResponse;
-import com.bigtree.auth.model.AuthRequest;
-import com.bigtree.auth.model.TokenRequest;
-import com.bigtree.auth.model.UserRegistrationRequest;
+import com.bigtree.auth.model.*;
 import com.bigtree.auth.repository.AccountRepository;
 import com.bigtree.auth.repository.IdentityRepository;
 import com.bigtree.auth.security.CryptoHelper;
@@ -241,7 +238,22 @@ public class UserService {
         return authRequest;
     }
 
-    public Identity updatePersonal(MultiValueMap form) {
+    public Identity updatePersonal(PersonalDetails personalDetails) {
+        Optional<Identity> byId = repository.findById(personalDetails.getCustomerId());
+        if ( byId.isPresent()){
+            Identity identity = byId.get();
+            if ( StringUtils.isEmpty(personalDetails.getFirstName())){
+                identity.setFirstName(personalDetails.getFirstName());
+            }
+            if ( StringUtils.isEmpty(personalDetails.getLastName())){
+                identity.setLastName(personalDetails.getLastName());
+            }
+            if ( StringUtils.isEmpty(personalDetails.getMobile())){
+                identity.setMobile(personalDetails.getMobile());
+            }
+            return repository.save(identity);
+        }
+        log.info("Customer not found {}", personalDetails.getCustomerId());
         return null;
     }
 }

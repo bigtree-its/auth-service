@@ -14,25 +14,25 @@ import java.util.UUID;
 public class ApiErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleSystemError(Exception e){
-      log.error("System Exception occurred. {}", e.getMessage());
-      ApiError error = ApiError.builder()
-              .reference(UUID.randomUUID().toString())
-              .title("Unexpected error occurred")
-              .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-              .detail(e.getMessage())
-              .build();
-      return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ApiError> handleSystemError(Exception e) {
+        ApiError error = ApiError.builder()
+                .reference(UUID.randomUUID().toString())
+                .title("Unexpected error occurred")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .detail(e.getMessage())
+                .build();
+        log.error("System Exception occurred. {}={}", error.reference, e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiError> handleApiError(ApiException e){
-        log.error("API Exception occurred. {}", e.getMessage());
+    public ResponseEntity<ApiError> handleApiError(ApiException e) {
         ApiError error = ApiError.builder()
                 .reference(UUID.randomUUID().toString())
                 .title(e.status.getReasonPhrase())
                 .status(e.getStatus().value())
                 .detail(e.getMessage()).build();
+        log.error("API Exception occurred.{} = {}", error.reference, e.getMessage());
         return new ResponseEntity<>(error, e.status);
     }
 }
