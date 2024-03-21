@@ -1,6 +1,6 @@
 package com.bigtree.auth;
 
-import com.bigtree.auth.entity.ClientType;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.entity.PasswordResetOtp;
 import com.bigtree.auth.model.UserRegistrationRequest;
 import com.bigtree.auth.service.LoginService;
@@ -24,7 +24,7 @@ public class PasswordResetInitiateTest {
 
     @BeforeAll
     void setUpFixture() {
-        dummyUserRegReq = DummyData.createRegisterRequest(ClientType.Customer);
+        dummyUserRegReq = DummyData.createRegisterRequest(UserType.Customer);
     }
 
     @Test

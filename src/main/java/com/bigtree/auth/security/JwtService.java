@@ -1,7 +1,7 @@
 package com.bigtree.auth.security;
 
-import com.bigtree.auth.entity.ClientType;
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.error.ApiException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -66,41 +65,41 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, Identity identity) {
+    public Boolean validateToken(String token, User user) {
         log.info("Validating token...");
         if (isTokenExpired(token)){
             log.error("Token expired...");
             return false;
         }
         final String username = extractUsername(token);
-        return (username.equals(identity.getEmail()) && !isTokenExpired(token));
+        return (username.equals(user.getEmail()) && !isTokenExpired(token));
     }
 
-    public String generateIdToken(Identity identity){
+    public String generateIdToken(User user){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("firstName", identity.getFirstName());
-        claims.put("lastName", identity.getLastName());
-        claims.put("clientId", identity.getClientId());
-        claims.put("recordId", identity.get_id());
-        claims.put("clientType", identity.getClientType().getName());
-        claims.put("email", identity.getEmail());
-        claims.put("mobile", identity.getMobile());
-        return createIdToken(claims, identity);
+        claims.put("firstName", user.getFirstName());
+        claims.put("lastName", user.getLastName());
+        claims.put("clientId", user.getUserId());
+        claims.put("recordId", user.get_id());
+        claims.put("clientType", user.getUserType().getName());
+        claims.put("email", user.getEmail());
+        claims.put("mobile", user.getMobile());
+        return createIdToken(claims, user);
     }
 
-    public String generateAccessToken(Identity identity) {
+    public String generateAccessToken(User user) {
         log.info("The Secret Key Algo: {}, Key: {}", getSecretKey().getAlgorithm(), getSecretKey().toString());
         Date expiry = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
-        if ( identity.getClientType() == ClientType.CustomerApp || identity.getClientType() == ClientType.SupplierApp){
+        if ( user.getUserType() == UserType.CustomerApp || user.getUserType() == UserType.SupplierApp){
             expiry = Date.from(LocalDate.now().plusDays(365).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         }
         Map<String, Object> claims = new HashMap<>();
-        claims.put("clientId", identity.getClientId());
-        claims.put("recordId", identity.get_id());
-        claims.put("clientType", identity.getClientType().getName());
+        claims.put("clientId", user.getUserId());
+        claims.put("recordId", user.get_id());
+        claims.put("clientType", user.getUserType().getName());
         return Jwts.builder()
                 .claims(claims)
-                .subject(identity.get_id())
+                .subject(user.get_id())
                 .issuer("www.auth.dudul.com")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(expiry)// set expiry as 60 mins
@@ -108,22 +107,22 @@ public class JwtService {
                 .compact();
     }
 
-    private String createIdToken(Map<String, Object> claims, Identity identity) {
+    private String createIdToken(Map<String, Object> claims, User user) {
         return Jwts.builder()
                 .claims(claims)
-                .issuer("www.auth.hoc.com")
-                .subject(identity.getClientId())
+                .issuer("auth.desitimes.co.uk")
+                .subject(user.getUserId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+1000*60*60))// set expiry as 60 mins
                 .signWith(getSecretKey())
                 .compact();
     }
 
-    public String createPrivateKeyJwt(Map<String, String> claims, Identity identity) {
+    public String createPrivateKeyJwt(Map<String, String> claims, User user) {
         return Jwts.builder()
                 .claims(claims)
-                .issuer("www.auth.lunchie-munchie.com")
-                .subject(identity.getClientId())
+                .issuer("auth.desitimes.co.uk")
+                .subject(user.getUserId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+1000*60*60*24*365))// set expiry as 1 year
                 .signWith(getSecretKey())

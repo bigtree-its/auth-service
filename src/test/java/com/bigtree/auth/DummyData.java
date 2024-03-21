@@ -1,10 +1,8 @@
 package com.bigtree.auth;
 
 import com.bigtree.auth.entity.Address;
-import com.bigtree.auth.entity.Identity;
-import com.bigtree.auth.entity.ClientType;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.model.UserRegistrationRequest;
-import org.apache.commons.lang3.RandomStringUtils;
 
 public class DummyData {
 
@@ -26,9 +24,9 @@ public class DummyData {
                 .build();
     }
 
-    public static UserRegistrationRequest createRegisterRequest(ClientType clientType) {
+    public static UserRegistrationRequest createRegisterRequest(UserType userType) {
         String clientEmail = "";
-        switch (clientType){
+        switch (userType){
             case Customer -> clientEmail = CUSTOMER_EMAIL;
             case Supplier -> clientEmail = SUPPLIER_EMAIL;
             case Employee -> clientEmail = EMPLOYEE_EMAIL;
@@ -36,7 +34,7 @@ public class DummyData {
             case SupplierApp -> clientEmail = SUPPLIER_APP_EMAIL;
         }
         return UserRegistrationRequest.builder()
-                .clientType(clientType)
+                .userType(userType)
                 .password("1234")
                 .mobile("0987654321")
                 .email(clientEmail)

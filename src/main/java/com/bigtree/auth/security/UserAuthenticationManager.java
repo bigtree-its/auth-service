@@ -1,9 +1,9 @@
-package com.bigtree.auth.service;
+package com.bigtree.auth.security;
 
 import com.bigtree.auth.entity.Account;
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
 import com.bigtree.auth.repository.AccountRepository;
-import com.bigtree.auth.repository.IdentityRepository;
+import com.bigtree.auth.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class RetailCustomerAuthenticator implements AuthenticationManager {
+public class UserAuthenticationManager implements AuthenticationManager {
 
     @Autowired
-    IdentityRepository identityRepository;
+    UserRepository userRepository;
 
     @Autowired
     AccountRepository accountRepository;
@@ -25,15 +25,16 @@ public class RetailCustomerAuthenticator implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UsernamePasswordAuthenticationToken request = (UsernamePasswordAuthenticationToken) authentication;
-       log.info("Authenticating retail customer {}", request.getPrincipal());
-        Identity customer = identityRepository.findByEmail((String) request.getPrincipal());
-        if ( customer != null){
-            log.info("Customer found.. {}", customer);
-            Account account = accountRepository.findByIdentityAndPassword(customer.get_id(), (String) request.getCredentials());
+        log.info("Authenticating User {}", request.getPrincipal());
+        User user = userRepository.findByEmail((String) request.getPrincipal());
+        if ( user != null){
+            log.info("User {} found as {}", user.getEmail(), user.getUserType().getName());
+            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), (String) request.getCredentials());
             if ( account != null){
-                log.info("Customer authenticated");
+                log.info("User authenticated");
+                return authentication;
             }else{
-                log.error("Customer not authenticated");
+                log.error("User not authenticated. Username and password are not matching");
             }
         }
         return null;

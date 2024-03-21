@@ -1,7 +1,7 @@
 package com.bigtree.auth.service;
 
 import com.bigtree.auth.config.ResourcesConfig;
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
 import com.bigtree.auth.security.CryptoHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -35,7 +35,7 @@ public class EmailService {
     CryptoHelper cryptoHelper;
 
     public void setOnetimePasscode(String email, String customerName, String otp) {
-        log.info("Sending otp to customer email {}", email);
+        log.info("Sending otp to user email {}", email);
 
         try {
             Map<String, String> queries = new HashMap<>();
@@ -46,7 +46,7 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", customerName);
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
-            sendMail(email, "Reset your password | Lunchie-Munchie", "password-reset-instructions", params);
+            sendMail(email, "Reset your password | DesiTimes", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -62,9 +62,9 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(emailContentHelper.build(template, params), true);
             javaMailSender.send(mimeMessage);
-            log.info("OTP email sent to {}", to);
+            log.info("Email sent to user {}", to);
         } catch (MessagingException e) {
-            log.info("Exception while sending OTP email to {}", to);
+            log.info("Exception while sending email to user {}", to);
         }
     }
 
@@ -91,18 +91,18 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | HouseOfChef", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | DesiTimes", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
     }
 
-    public void senSignupCompletion(Identity identity) {
-        log.info("Sending password confirmation email {}", identity.getEmail());
+    public void senSignupCompletion(User user) {
+        log.info("Sending signup confirmation email {}", user.getEmail());
         try {
             Map<String, Object> params = new HashMap<>();
-            params.put("customerName", identity.getFullName());
-            sendMail(identity.getEmail(), "Welcome to Chumma", "signup-confirmation", params);
+            params.put("customerName", user.getFullName());
+            sendMail(user.getEmail(), "Welcome to DesiTimes", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

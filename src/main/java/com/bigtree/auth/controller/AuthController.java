@@ -1,27 +1,21 @@
 package com.bigtree.auth.controller;
 
-import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.model.*;
-import com.bigtree.auth.repository.IdentityRepository;
+import com.bigtree.auth.repository.UserRepository;
 import com.bigtree.auth.security.JwtTokenUtil;
-import com.bigtree.auth.service.CustomerAuthenticationService;
-import com.bigtree.auth.service.LoginService;
-import jakarta.validation.Valid;
+import com.bigtree.auth.service.UserAuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
 @Slf4j
-@RequestMapping("/authenticate/customer")
-public class CustomerAuthController {
+@RequestMapping("/v1/auth")
+public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -30,16 +24,16 @@ public class CustomerAuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private IdentityRepository identityRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    CustomerAuthenticationService customerAuthenticationService;
+    UserAuthenticationService userAuthenticationService;
 
     @RequestMapping(value = "/token", method = RequestMethod.POST)
-    public ResponseEntity<TokenResponse> customerToken(@RequestBody AuthRequest authenticationRequest) throws Exception {
-        log.info("Request for customer token");
+    public ResponseEntity<TokenResponse> token(@RequestBody AuthRequest authenticationRequest) throws Exception {
+        log.info("Request for user token");
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-        TokenResponse tokenResponse = customerAuthenticationService.authenticate(authenticationRequest);
+        TokenResponse tokenResponse = userAuthenticationService.authenticate(authenticationRequest);
         return ResponseEntity.ok(tokenResponse);
     }
 

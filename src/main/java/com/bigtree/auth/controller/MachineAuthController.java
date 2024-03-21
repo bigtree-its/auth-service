@@ -1,6 +1,5 @@
 package com.bigtree.auth.controller;
 
-import com.bigtree.auth.entity.Identity;
 import com.bigtree.auth.model.TokenResponse;
 import com.bigtree.auth.security.JwtTokenUtil;
 import com.bigtree.auth.service.LoginService;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/authenticate/machine")
+@RequestMapping("/v1/auth/machine")
 @CrossOrigin(origins = "*")
 public class MachineAuthController {
 

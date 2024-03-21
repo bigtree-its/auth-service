@@ -5,7 +5,7 @@ crypto:
   key: 1234567891234567
 
 auth:
-  permitAll: /api/users/private-key-jwt,/authenticate/machine/token,/authenticate/customer/token
+  permitAll: /v1/users/private-key-jwt,/v1/auth/machine/token,/v1/auth/token,/v1/users/signup,/v1/users
 springdoc:
   api-docs:
     path: /api-docs

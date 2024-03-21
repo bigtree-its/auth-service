@@ -1,15 +1,13 @@
 package com.bigtree.auth.service;
 
 
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
 import com.bigtree.auth.entity.Account;
-import com.bigtree.auth.entity.ClientType;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.error.ApiException;
 import com.bigtree.auth.model.*;
 import com.bigtree.auth.repository.AccountRepository;
-import com.bigtree.auth.repository.IdentityRepository;
-import com.bigtree.auth.security.CryptoHelper;
-import com.bigtree.auth.security.JwtService;
+import com.bigtree.auth.repository.UserRepository;
 import com.bigtree.auth.security.JwtTokenUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,7 @@ import java.util.*;
 public class UserService {
 
     @Autowired
-    IdentityRepository repository;
+    UserRepository repository;
 
     @Autowired
     AccountRepository accountRepository;
@@ -39,29 +37,29 @@ public class UserService {
     @Autowired
     EmailService emailService;
 
-    public List<Identity> getUsers() {
+    public List<User> getUsers() {
         log.info("Fetching all users");
         return repository.findAll();
     }
 
-    public Identity updateUser(String _id, Identity identity) {
-        Optional<Identity> optional = repository.findById(_id);
+    public User updateUser(String _id, User user) {
+        Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
             log.info("Identity already exist. Updating");
-            Identity exist = optional.get();
-            if (StringUtils.isNotEmpty(identity.getFirstName())) {
-                exist.setFirstName(identity.getFirstName());
+            User exist = optional.get();
+            if (StringUtils.isNotEmpty(user.getFirstName())) {
+                exist.setFirstName(user.getFirstName());
             }
-            if (StringUtils.isNotEmpty(identity.getLastName())) {
-                exist.setLastName(identity.getLastName());
+            if (StringUtils.isNotEmpty(user.getLastName())) {
+                exist.setLastName(user.getLastName());
             }
-            if (StringUtils.isNotEmpty(identity.getMobile())) {
-                exist.setMobile(identity.getMobile());
+            if (StringUtils.isNotEmpty(user.getMobile())) {
+                exist.setMobile(user.getMobile());
             }
-            if (StringUtils.isNotEmpty(identity.getEmail())) {
-                exist.setEmail(identity.getEmail());
+            if (StringUtils.isNotEmpty(user.getEmail())) {
+                exist.setEmail(user.getEmail());
             }
-            Identity updated = repository.save(exist);
+            User updated = repository.save(exist);
             if (updated.get_id() != null) {
                 log.info("Identity updated {}", updated.get_id());
             }
@@ -73,7 +71,7 @@ public class UserService {
     }
 
     public void deleteUser(String _id) {
-        Optional<Identity> optional = repository.findById(_id);
+        Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
             log.info("Identity already exist. Deleting identity");
             repository.deleteById(_id);
@@ -83,8 +81,8 @@ public class UserService {
         }
     }
 
-    public Identity getUser(String _id) {
-        Optional<Identity> optional = repository.findById(_id);
+    public User getUser(String _id) {
+        Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
             log.error("Identity found");
             return optional.get();
@@ -97,83 +95,84 @@ public class UserService {
 
     public ApiResponse registerUser(UserRegistrationRequest req) {
 
-        log.info("Signing up {}", req);
-        if (req.getClientType() == null) {
-            log.error("Identity type is mandatory");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client type is mandatory");
+        if (req.getUserType() == null) {
+            log.error("User type is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User type is mandatory");
         }
         if (StringUtils.isEmpty(req.getEmail())) {
-            log.error("Identity email is mandatory");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client email is mandatory");
+            log.error("User email is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User email is mandatory");
         }
         if (StringUtils.isEmpty(req.getMobile())) {
-            log.error("Identity mobile is mandatory");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client mobile is mandatory");
+            log.error("User mobile is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User mobile is mandatory");
         }
-        if (req.getClientType() != ClientType.CustomerApp && req.getClientType() != ClientType.SupplierApp && StringUtils.isEmpty(req.getPassword())) {
-            log.error("Identity password is mandatory");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client password is mandatory");
+        if (req.getUserType() != UserType.CustomerApp && req.getUserType() != UserType.SupplierApp && StringUtils.isEmpty(req.getPassword())) {
+            log.error("User password is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User password is mandatory");
         }
-        Identity existing = repository.findByEmail(req.getEmail());
-        if (existing != null && existing.get_id() != null && existing.getClientType().getName() == req.getClientType().getName()) {
-            log.error("Identity already exist");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Identity already exist");
+        User existing = repository.findByEmail(req.getEmail());
+        if (existing != null) {
+            log.error("User already exist {}", existing.getEmail());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User already exist");
         }
         String message = "";
-        String clientId = generateClientId(req.getClientType());
+        String userId = generateUserId(req.getUserType());
         String clientSecret = "";
-        if (req.getClientType() == ClientType.CustomerApp || req.getClientType() == ClientType.SupplierApp) {
+        if (req.getUserType() == UserType.CustomerApp || req.getUserType() == UserType.SupplierApp) {
             clientSecret = RandomStringUtils.random(12, "123456789abcdefghijklmno");
         }
-        Identity newIdentity = Identity.builder()
+        User newUser = User.builder()
                 .email(req.getEmail())
-                .clientId(clientId)
+                .userId(userId)
                 .firstName(req.getFirstName())
                 .lastName(req.getLastName())
                 .mobile(req.getMobile())
-                .clientType(req.getClientType())
+                .userType(req.getUserType())
                 .build();
 
-        final Identity identity = repository.save(newIdentity);
-        if (identity.get_id() != null) {
-            log.info("New identity created {}", identity.get_id());
+        final User user = repository.save(newUser);
+        if (user.get_id() != null) {
+            log.info("New user created {} as {}", user.get_id(), user.getUserType().name());
             Account account = accountRepository.save(Account.builder()
-                    .identity(identity.get_id())
+                    .userId(user.get_id())
                     .password(StringUtils.isEmpty(clientSecret)?  req.getPassword(): clientSecret)
                     .passwordChanged(LocalDateTime.now())
                     .build());
             if (account.get_id() != null) {
-                log.info("Account secrets created for identity {}", identity.get_id());
-                if (req.getClientType() == ClientType.CustomerApp || req.getClientType() == ClientType.SupplierApp) {
+                log.info("Account secrets created for user {} with id {}", user.getEmail(), user.get_id());
+                if (req.getUserType() == UserType.CustomerApp || req.getUserType() == UserType.SupplierApp) {
                     Map<String, String> claims = new HashMap<>();
-                    claims.put("client_id", identity.getClientId());
+                    claims.put("client_id", user.getUserId());
                     claims.put("client_secret", account.getPassword());
-                    claims.put("client_type", identity.getClientType().getName());
-                    claims.put("client_email", identity.getEmail());
-                    message = jwtService.createPrivateKeyJwt(claims, identity);
+                    claims.put("client_type", user.getUserType().getName());
+                    claims.put("client_email", user.getEmail());
+                    message = jwtService.createPrivateKeyJwt(claims, user);
+                }else{
+                    message = "Signup successful";
                 }
-                emailService.senSignupCompletion(identity);
+                emailService.senSignupCompletion(user);
                 return ApiResponse.builder().endpoint("/register").message(message).build();
             }
         }
         throw new ApiException(HttpStatus.BAD_REQUEST, "Could not complete your request. Please reach out to customer support");
     }
 
-    private String generateClientId(ClientType clientType) {
+    private String generateUserId(UserType userType) {
 
-        String prefix = "hoc-" + clientType.getCode() + "-";
-        String clientId = "";
+        String prefix = "desi-" + userType.getCode() + "-";
+        String userId = "";
         boolean unique = false;
         while (!unique) {
-            clientId = prefix + RandomStringUtils.random(6, "123456");
-            final Identity exist = repository.findByClientId(clientId);
+            userId = prefix + RandomStringUtils.random(6, "123456");
+            final User exist = repository.findByUserId(userId);
             unique = exist == null;
         }
-        return clientId;
+        return userId;
     }
 
-    public Identity findByEmailAndUserType(String email, ClientType clientType) {
-        Identity byEmail = repository.findByEmail(email);
+    public User findByEmailAndUserType(String email, UserType userType) {
+        User byEmail = repository.findByEmail(email);
         if (byEmail == null) {
             log.info("Identity not found with email {}", email);
         }
@@ -191,17 +190,17 @@ public class UserService {
         }
         AuthRequest authRequest = prepareRequest(parameters);
         if ( StringUtils.isNotEmpty(authRequest.getClientEmail())){
-            Identity identity = repository.findByEmail(authRequest.getClientEmail());
-            if ( identity != null){
-                log.info("Found a client with email {}", authRequest.getClientEmail());
-                Account byIdentity = accountRepository.findByIdentity(identity.get_id());
-                if ( byIdentity != null){
+            User user = repository.findByEmail(authRequest.getClientEmail());
+            if ( user != null){
+                log.info("Found a user with email {}", authRequest.getClientEmail());
+                Account account = accountRepository.findByUserId(user.get_id());
+                if ( account != null){
                     Map<String, String> claims = new HashMap<>();
-                    claims.put("client_id", identity.getClientId());
-                    claims.put("client_secret", byIdentity.getPassword());
-                    claims.put("client_type", identity.getClientType().getName());
-                    claims.put("client_email", identity.getEmail());
-                    final String privateKeyJwt = jwtService.createPrivateKeyJwt(claims, identity);
+                    claims.put("user_id", user.getUserId());
+                    claims.put("user_secret", account.getPassword());
+                    claims.put("user_type", user.getUserType().getName());
+                    claims.put("user_email", user.getEmail());
+                    final String privateKeyJwt = jwtService.createPrivateKeyJwt(claims, user);
                     return ApiResponse.builder().endpoint("/private-key-jwt").message(privateKeyJwt).build();
                 }
             }
@@ -229,7 +228,7 @@ public class UserService {
             } else if (key.equalsIgnoreCase("password")) {
                 authRequest.setPassword(value);
             } else if (key.equalsIgnoreCase("client_type")) {
-                authRequest.setClientType(ClientType.fromName(value));
+                authRequest.setUserType(UserType.fromName(value));
             } else if (key.equalsIgnoreCase("client_email")) {
                 authRequest.setClientEmail(value);
             }
@@ -238,20 +237,20 @@ public class UserService {
         return authRequest;
     }
 
-    public Identity updatePersonal(PersonalDetails personalDetails) {
-        Optional<Identity> byId = repository.findById(personalDetails.getCustomerId());
+    public User updatePersonal(PersonalDetails personalDetails) {
+        Optional<User> byId = repository.findById(personalDetails.getCustomerId());
         if ( byId.isPresent()){
-            Identity identity = byId.get();
+            User user = byId.get();
             if ( StringUtils.isEmpty(personalDetails.getFirstName())){
-                identity.setFirstName(personalDetails.getFirstName());
+                user.setFirstName(personalDetails.getFirstName());
             }
             if ( StringUtils.isEmpty(personalDetails.getLastName())){
-                identity.setLastName(personalDetails.getLastName());
+                user.setLastName(personalDetails.getLastName());
             }
             if ( StringUtils.isEmpty(personalDetails.getMobile())){
-                identity.setMobile(personalDetails.getMobile());
+                user.setMobile(personalDetails.getMobile());
             }
-            return repository.save(identity);
+            return repository.save(user);
         }
         log.info("Customer not found {}", personalDetails.getCustomerId());
         return null;

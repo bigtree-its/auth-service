@@ -1,6 +1,6 @@
 package com.bigtree.auth.model;
 
-import com.bigtree.auth.entity.ClientType;
+import com.bigtree.auth.entity.UserType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,5 +16,5 @@ public class AuthRequest {
     private String clientAssertionType;
     private String username;
     private String password;
-    private ClientType clientType;
+    private UserType userType;
 }

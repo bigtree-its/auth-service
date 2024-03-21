@@ -1,8 +1,8 @@
 package com.bigtree.auth.security;
 
 
-import com.bigtree.auth.entity.ClientType;
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.UserType;
+import com.bigtree.auth.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -69,19 +69,20 @@ public class JwtTokenUtil implements Serializable {
     }
 
     //generate token for user
-    public String generateToken(Identity identity) {
+    public String generateToken(User user) {
         log.info("Generating access token..");
         Map<String, String> claims = new HashMap<>();
-        claims.put("firstName", identity.getFirstName());
-        claims.put("lastName", identity.getLastName());
-        claims.put("clientType", identity.getClientType().getName());
-        claims.put("mobile", identity.getMobile());
-        claims.put("customerId", identity.get_id());
-        return doGenerateToken(claims, identity);
+        claims.put("firstName", user.getFirstName());
+        claims.put("lastName", user.getLastName());
+        claims.put("userType", user.getUserType().getName());
+        claims.put("mobile", user.getMobile());
+        claims.put("recordId", user.get_id());
+        claims.put("userId", user.getUserId());
+        return doGenerateToken(claims, user);
     }
 
-    public String createPrivateKeyJwt(Map<String, String> claims, Identity identity) {
-        return doGenerateToken(claims, identity);
+    public String createPrivateKeyJwt(Map<String, String> claims, User user) {
+        return doGenerateToken(claims, user);
     }
 
     //while creating the token -
@@ -89,11 +90,11 @@ public class JwtTokenUtil implements Serializable {
     //2. Sign the JWT using the HS512 algorithm and secret key.
     //3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
     //   compaction of the JWT to a URL-safe string
-    private String doGenerateToken(Map<String, String> claims, Identity identity) {
-        long l = (identity.getClientType() == ClientType.Customer) ? JWT_TOKEN_VALIDITY : LONG_JWT_TOKEN_VALIDITY;
+    private String doGenerateToken(Map<String, String> claims, User user) {
+        long l = (user.getUserType() == UserType.Customer) ? JWT_TOKEN_VALIDITY : LONG_JWT_TOKEN_VALIDITY;
         Date expiry = new Date(System.currentTimeMillis() + l  * 1000);
         Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
-        String token = Jwts.builder().setClaims(claims).signWith(key, SignatureAlgorithm.HS512).setExpiration(expiry).subject(identity.getEmail()).compact();
+        String token = Jwts.builder().setClaims(claims).signWith(key, SignatureAlgorithm.HS512).setExpiration(expiry).subject(user.getEmail()).compact();
         return token;
     }
 

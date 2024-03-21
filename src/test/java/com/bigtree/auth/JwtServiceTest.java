@@ -1,7 +1,7 @@
 package com.bigtree.auth;
 
-import com.bigtree.auth.entity.Identity;
-import com.bigtree.auth.entity.ClientType;
+import com.bigtree.auth.entity.User;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.security.JwtService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +18,15 @@ public class JwtServiceTest {
 
     @Test
     public void testGenerateAndValidateToken(){
-        final String idToken = jwtService.generateIdToken(Identity.builder()
+        final String idToken = jwtService.generateIdToken(User.builder()
                 .email("test@gmail.com")
                 ._id("auth-id")
-                .clientType(ClientType.Supplier)
+                .userType(UserType.Supplier)
                 .firstName("firstName")
                 .lastName("lastName")
                 .mobile("9897545454545")
                 .build());
-        final String accessToken = jwtService.generateAccessToken(Identity.builder().build());
+        final String accessToken = jwtService.generateAccessToken(User.builder().build());
         Assertions.assertNotNull(idToken);
         Assertions.assertNotNull(accessToken);
         Assertions.assertNotNull(jwtService.validateAccessToken(accessToken));

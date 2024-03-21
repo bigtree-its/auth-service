@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/accounts")
+@RequestMapping("/v1/accounts")
 @CrossOrigin(origins = "*")
 public class AccountController {
 

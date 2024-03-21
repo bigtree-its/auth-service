@@ -1,8 +1,6 @@
 package com.bigtree.auth;
 
-import com.bigtree.auth.entity.ClientType;
 import com.bigtree.auth.model.ApiResponse;
-import com.bigtree.auth.model.TokenResponse;
 import com.bigtree.auth.service.UserService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

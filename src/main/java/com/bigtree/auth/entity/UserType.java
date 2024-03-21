@@ -1,6 +1,9 @@
 package com.bigtree.auth.entity;
 
-public enum ClientType {
+import lombok.Getter;
+
+@Getter
+public enum UserType {
 
     Customer("Customer", "cus"),
     Supplier("Supplier", "sup"),
@@ -11,21 +14,13 @@ public enum ClientType {
     private final String name;
     private final String code;
 
-    ClientType(String name, String code){
+    UserType(String name, String code){
         this.name = name;
         this.code = code;
     }
 
-    public String getName(){
-        return this.name;
-    }
-
-    public String getCode(){
-        return this.code;
-    }
-
-    public static ClientType fromName(String name) {
-        for (ClientType b : ClientType.values()) {
+    public static UserType fromName(String name) {
+        for (UserType b : UserType.values()) {
             if (b.name.equalsIgnoreCase(name)) {
                 return b;
             }
@@ -33,8 +28,8 @@ public enum ClientType {
         return null;
     }
 
-    public static ClientType fromCode(String code) {
-        for (ClientType b : ClientType.values()) {
+    public static UserType fromCode(String code) {
+        for (UserType b : UserType.values()) {
             if (b.code.equalsIgnoreCase(code)) {
                 return b;
             }

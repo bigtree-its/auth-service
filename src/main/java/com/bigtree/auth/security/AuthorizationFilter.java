@@ -1,8 +1,8 @@
 package com.bigtree.auth.security;
 
 
-import com.bigtree.auth.entity.Identity;
-import com.bigtree.auth.repository.IdentityRepository;
+import com.bigtree.auth.entity.User;
+import com.bigtree.auth.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,14 +19,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Slf4j
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private IdentityRepository identityRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -40,13 +39,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         String servletPath = request.getServletPath();
         log.info("Authorizing the request {}", servletPath);
-        if( permitAll.contains(servletPath) ){
+        if( permitAll.contains(servletPath.trim()) ){
             log.info("The requested url is whitelisted..");
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     "PermitAll", null, null);
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             log.info("Authorised");
         }else{
+            log.info("The requested url is not whitelisted..");
             authorise(request);
         }
 
@@ -94,7 +94,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 }
             }else{
                 log.info("Verifying customer access token");
-                Identity customer = this.identityRepository.findByEmail(username);
+                User customer = this.userRepository.findByEmail(username);
                 if ( customer != null){
                     if (!jwtTokenUtil.isTokenExpired(jwtToken)){
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

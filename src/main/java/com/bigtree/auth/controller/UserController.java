@@ -1,6 +1,6 @@
 package com.bigtree.auth.controller;
 
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
 import com.bigtree.auth.entity.Session;
 import com.bigtree.auth.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/users")
+@RequestMapping("/v1/users")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -38,39 +38,38 @@ public class UserController {
     SessionService sessionService;
 
     @GetMapping("")
-    public ResponseEntity<List<Identity>> getAll(){
+    public ResponseEntity<List<User>> getAll(){
         log.info("Received request to get all identities");
-        List<Identity> identities = userService.getUsers();
+        List<User> identities = userService.getUsers();
         return ResponseEntity.ok().body(identities);
     }
 
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<Identity> get(@PathVariable String userId){
+    public ResponseEntity<User> get(@PathVariable String userId){
         log.info("Received request to get user {}", userId);
-        Identity identity = userService.getUser(userId);
-        return ResponseEntity.ok().body(identity);
+        User user = userService.getUser(userId);
+        return ResponseEntity.ok().body(user);
     }
 
     @PostMapping(value = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest){
-        log.info("Received request to signup new user {}", userRegistrationRequest);
+        log.info("Received request to signup new user {} as {}", userRegistrationRequest.getEmail(), userRegistrationRequest.getUserType().getName());
         ApiResponse response  = userService.registerUser(userRegistrationRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        log.info("User Created {}", response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
     @PutMapping(value = "/{userId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Identity> update(@PathVariable String userId, @Valid @RequestBody Identity identity){
+    public ResponseEntity<User> update(@PathVariable String userId, @Valid @RequestBody User user){
         log.info("Received request to update user {}", userId);
-        Identity updated = userService.updateUser(userId, identity);
+        User updated = userService.updateUser(userId, user);
         return ResponseEntity.ok().body(updated);
     }
 
     @PostMapping(value = "/update_personal",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Identity> updatePersonal(@RequestHeader("User-Agent") String userAgent, @RequestBody PersonalDetails personalDetails){
+    public ResponseEntity<User> updatePersonal(@RequestHeader("User-Agent") String userAgent, @RequestBody PersonalDetails personalDetails){
         log.info("Received request to update personal details of user {}", personalDetails.getCustomerId());
-        Identity identity = userService.updatePersonal(personalDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(identity);
+        User user = userService.updatePersonal(personalDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @DeleteMapping(value = "/{userId}")

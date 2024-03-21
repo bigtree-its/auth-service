@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Slf4j
-@RequestMapping("/passwords")
+@RequestMapping("/v1/auth/passwords")
 public class PasswordController {
 
     @Autowired
@@ -22,14 +22,14 @@ public class PasswordController {
 
     @PostMapping(value = "/reset_initiate", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> passwordResetInitiate(@Valid @RequestBody PasswordResetInitiate req){
-        log.info("Received password reset initiate request for customer {}", req.getEmail());
+        log.info("Received password reset initiate request for user {}", req.getEmail());
         loginService.passwordResetInitiate(req.getEmail());
         ApiResponse apiResponse = ApiResponse.builder().message("An OTP sent to your registered email address. Please use that to reset your password").build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
     @PostMapping(value = "/reset_submit", consumes = "application/json", produces = "application/json")
     public ResponseEntity<ApiResponse> passwordResetSubmit(@Valid @RequestBody PasswordResetSubmit req){
-        log.info("Received password reset request for customer {}", req.getEmail());
+        log.info("Received password reset request for user {}", req.getEmail());
         loginService.passwordResetSubmit(req);
         ApiResponse apiResponse = ApiResponse.builder().message("Your password has been successfully changed.").build();
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

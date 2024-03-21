@@ -1,9 +1,9 @@
 package com.bigtree.auth.service;
 
-import com.bigtree.auth.entity.Identity;
+import com.bigtree.auth.entity.User;
 import com.bigtree.auth.entity.Session;
 import com.bigtree.auth.repository.SessionRepository;
-import com.bigtree.auth.repository.IdentityRepository;
+import com.bigtree.auth.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,30 +20,30 @@ public class SessionService {
     SessionRepository sessionRepository;
 
     @Autowired
-    IdentityRepository identityRepository;
+    UserRepository userRepository;
 
-    public List<Session> getSessionsForUser(String clientId){
-        Identity identity = identityRepository.findByClientId(clientId);
-        if ( identity != null){
-            List<Session> sessions = sessionRepository.findByUserId(identity.get_id());
+    public List<Session> getSessionsForUser(String userId){
+        User user = userRepository.findByUserId(userId);
+        if ( user != null){
+            List<Session> sessions = sessionRepository.findByUserId(user.get_id());
             if (!CollectionUtils.isEmpty(sessions)){
-                log.info("{} sessions found for client {}", sessions.size(), identity.getEmail());
+                log.info("{} sessions found for user {}", sessions.size(), user.getEmail());
             }else{
-                log.info("No sessions found for client {}", identity.getEmail());
+                log.info("No sessions found for user {}", user.getEmail());
             }
             return sessions;
         }
-        log.error("Identity not found with client {}", clientId);
+        log.error("User not found with id {}", userId);
         return Collections.emptyList();
     }
 
-    public Session getActiveSessionForUser(String clientId){
+    public Session getActiveSessionForUser(String userId){
         Session session = null;
-        Identity identity = identityRepository.findByClientId(clientId);
-        if ( identity != null){
-            List<Session> sessions = sessionRepository.findByUserId(identity.get_id());
+        User user = userRepository.findByUserId(userId);
+        if ( user != null){
+            List<Session> sessions = sessionRepository.findByUserId(user.get_id());
             if (!CollectionUtils.isEmpty(sessions)){
-                log.info("{} sessions found for client {}", sessions.size(), identity.getEmail());
+                log.info("{} sessions found for user {}", sessions.size(), user.getEmail());
                 for (Session s : sessions) {
                     if ( s.getFinish() == null){
                         session = s;
@@ -51,22 +51,22 @@ public class SessionService {
                     }
                 }
             }else{
-                log.info("No sessions found for client {}", identity.getEmail());
+                log.info("No sessions found for user {}", user.getEmail());
             }
         }else{
-            log.error("Identity not found with client {}", clientId);
+            log.error("User not found with userId {}", userId);
         }
 
         return session;
     }
 
-    public boolean deleteAllForUser(String clientId) {
-        Identity identity = identityRepository.findByClientId(clientId);
-        if (identity == null){
-            log.error("Identity not found with client {}", clientId);
+    public boolean deleteAllForUser(String userId) {
+        User user = userRepository.findByUserId(userId);
+        if (user == null){
+            log.error("User not found with id {}", userId);
             return false;
         }
-        List<Session> sessions = sessionRepository.findByUserId(identity.get_id());
+        List<Session> sessions = sessionRepository.findByUserId(user.get_id());
         sessionRepository.deleteAll(sessions);
         return true;
     }

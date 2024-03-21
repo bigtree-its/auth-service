@@ -14,7 +14,7 @@ public class Account {
 
     @MongoId
     private String _id;
-    private String identity;
+    private String userId;
     private String password;
     private LocalDateTime passwordChanged;
 }

@@ -6,9 +6,8 @@ import com.bigtree.auth.model.*;
 import com.bigtree.auth.repository.PasswordResetOtpRepository;
 import com.bigtree.auth.repository.SessionRepository;
 import com.bigtree.auth.repository.AccountRepository;
-import com.bigtree.auth.repository.IdentityRepository;
+import com.bigtree.auth.repository.UserRepository;
 import com.bigtree.auth.security.CryptoHelper;
-import com.bigtree.auth.security.JwtService;
 import com.bigtree.auth.security.JwtTokenUtil;
 import com.mongodb.client.result.DeleteResult;
 import io.jsonwebtoken.Claims;
@@ -33,7 +32,7 @@ import java.util.*;
 public class LoginService {
 
     @Autowired
-    IdentityRepository identityRepository;
+    UserRepository userRepository;
 
     @Autowired
     AccountRepository accountRepository;
@@ -69,8 +68,8 @@ public class LoginService {
         if (StringUtils.isEmpty(tokenRequest.getGrantType())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "grant_type is mandatory");
         }
-        if (Objects.isNull(tokenRequest.getClientType())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "client_type is mandatory");
+        if (Objects.isNull(tokenRequest.getUserType())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "user_type is mandatory");
         }
         if ( !StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.CLIENT_CREDENTIALS.name()) && !StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.PASSWORD.name())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid Grant Type");
@@ -78,7 +77,7 @@ public class LoginService {
         // Grant Type Client Credentials
         if (StringUtils.equalsIgnoreCase(tokenRequest.getGrantType(), GrantType.CLIENT_CREDENTIALS.name()) ) {
             validateClientCredentials(tokenRequest);
-            if ( StringUtils.isNotEmpty(tokenRequest.getClientId()) && StringUtils.isNotEmpty(tokenRequest.getClientSecret())){
+            if ( StringUtils.isNotEmpty(tokenRequest.getUserId()) && StringUtils.isNotEmpty(tokenRequest.getClientSecret())){
                 response = authTreeClientIdAndSecret(tokenRequest);
             }else  if ( StringUtils.isNotEmpty(tokenRequest.getClientAssertion())){
                 response = authTreeClientAssertion(tokenRequest);
@@ -89,75 +88,75 @@ public class LoginService {
     }
 
     private TokenResponse authTreePassword(TokenRequest tokenRequest) {
-        Identity identity;
+        User user;
         TokenResponse response;
         if ( StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Username and Password are mandatory for "+GrantType.PASSWORD.name()+ " Grant Type");
         }
-        identity = identityRepository.findByEmailAndClientType(tokenRequest.getUsername(), tokenRequest.getClientType());
-        if ( identity != null) {
+        user = userRepository.findByEmailAndUserType(tokenRequest.getUsername(), tokenRequest.getUserType());
+        if ( user != null) {
             log.info("Found an identity {}", tokenRequest.getUsername());
-            Account account = accountRepository.findByIdentityAndPassword(identity.get_id(), tokenRequest.getPassword());
+            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), tokenRequest.getPassword());
             if (account != null) {
-                response = generateToken(identity);
-                log.info("Authentication successful for client {}", tokenRequest.getUsername());
+                response = generateToken(user);
+                log.info("Authentication successful for user {}", tokenRequest.getUsername());
             } else {
-                log.error("Authentication failed for client {}",  tokenRequest.getUsername());
+                log.error("Authentication failed for user {}",  tokenRequest.getUsername());
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
             }
         }else{
-            log.error("Authentication failed for client {}",  tokenRequest.getUsername());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the client "+ tokenRequest.getUsername());
+            log.error("Authentication failed for user {}",  tokenRequest.getUsername());
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the user "+ tokenRequest.getUsername());
         }
         return response;
     }
 
     private TokenResponse authTreeClientAssertion(TokenRequest tokenRequest) {
         log.info("Authenticating machine user");
-        Identity identity;
+        User user;
         TokenResponse response;
         Boolean tokenExpired = jwtTokenUtil.isTokenExpired(tokenRequest.getClientAssertion());
         if (tokenExpired == null || tokenExpired){
-            log.error("Authentication failed for client {}",  tokenRequest.getClientId());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the client "+ tokenRequest.getClientId());
+            log.error("Authentication failed for user {}",  tokenRequest.getUserId());
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the user "+ tokenRequest.getUserId());
         }
         Claims claims = jwtTokenUtil.getAllClaimsFromToken(tokenRequest.getClientAssertion());
-        final String clientId = claims.get("client_id", String.class);
-        final String clientSecret = claims.get("client_secret", String.class);
-        final String clientType = claims.get("client_type", String.class);
-        final String clientEmail = claims.get("client_email", String.class);
-        identity = identityRepository.findByClientIdAndClientType(clientId, ClientType.fromName(clientType));
-        if ( identity != null) {
-            Account account = accountRepository.findByIdentityAndPassword(identity.get_id(), clientSecret);
+        final String userId = claims.get("user_id", String.class);
+        final String userSecret = claims.get("user_secret", String.class);
+        final String userType = claims.get("user_type", String.class);
+        final String userEmail = claims.get("user_email", String.class);
+        user = userRepository.findByUserIdAndUserType(userId, UserType.fromName(userType));
+        if ( user != null) {
+            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), userSecret);
             if (account != null) {
-                response = generateToken(identity);
-                log.info("Authentication successful for client {}", identity.getClientId());
+                response = generateToken(user);
+                log.info("Authentication successful for user {}", user.getUserId());
             } else {
-                log.error("Authentication failed for client {}",  identity.getClientId());
+                log.error("Authentication failed for user {}",  user.getUserId());
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
             }
         }else{
-            log.error("Authentication failed for client {}",  tokenRequest.getClientId());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the client "+ tokenRequest.getClientId());
+            log.error("Authentication failed for user {}",  tokenRequest.getUserId());
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the user "+ tokenRequest.getUserId());
         }
         return response;
     }
 
     private TokenResponse authTreeClientIdAndSecret(TokenRequest tokenRequest) {
         TokenResponse response = null;
-        Identity identity = identityRepository.findByClientIdAndClientType(tokenRequest.getClientId(), tokenRequest.getClientType());
-        if ( identity != null) {
-            Account account = accountRepository.findByIdentityAndPassword(identity.get_id(), tokenRequest.getClientSecret());
+        User user = userRepository.findByUserIdAndUserType(tokenRequest.getUserId(), tokenRequest.getUserType());
+        if ( user != null) {
+            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), tokenRequest.getClientSecret());
             if (account != null) {
-                response = generateToken(identity);
-                log.info("Authentication successful for client {}", identity.getClientId());
+                response = generateToken(user);
+                log.info("Authentication successful for user {}", user.getUserId());
             } else {
-                log.error("Authentication failed for client {}",  identity.getClientId());
+                log.error("Authentication failed for user {}",  user.getUserId());
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the email and password");
             }
         }else{
-            log.error("Authentication failed for client {}",  tokenRequest.getClientId());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the client "+ tokenRequest.getClientId());
+            log.error("Authentication failed for user {}",  tokenRequest.getUserId());
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the user "+ tokenRequest.getUserId());
         }
         return response;
     }
@@ -171,29 +170,29 @@ public class LoginService {
                 tokenRequest.setGrantType(value);
             }else if ( key.equalsIgnoreCase("username")){
                 tokenRequest.setUsername(value);
-            }else if ( key.equalsIgnoreCase("client_id")){
-                tokenRequest.setClientId(value);
-            }else if ( key.equalsIgnoreCase("client_secret")){
+            }else if ( key.equalsIgnoreCase("user_id")){
+                tokenRequest.setUserId(value);
+            }else if ( key.equalsIgnoreCase("user_secret")){
                 tokenRequest.setClientSecret(value);
-            }else if ( key.equalsIgnoreCase("client_assertion")){
+            }else if ( key.equalsIgnoreCase("user_assertion")){
                 tokenRequest.setClientAssertion(value);
-            }else if ( key.equalsIgnoreCase("client_assertion_type")){
+            }else if ( key.equalsIgnoreCase("user_assertion_type")){
                 tokenRequest.setClientAssertionType(value);
             }else if ( key.equalsIgnoreCase("password")){
                 tokenRequest.setPassword(value);
-            }else if ( key.equalsIgnoreCase("client_type")){
-                tokenRequest.setClientType(ClientType.fromName(value));
+            }else if ( key.equalsIgnoreCase("user_type")){
+                tokenRequest.setUserType(UserType.fromName(value));
             }
         }
         return tokenRequest;
     }
 
-    private TokenResponse generateToken(Identity identity) {
+    private TokenResponse generateToken(User user) {
         TokenResponse response;
-        final String accessToken = jwtTokenUtil.generateToken(identity);
+        final String accessToken = jwtTokenUtil.generateToken(user);
         final Session session = Session.builder().build();
         session.setStart(LocalDateTime.now());
-        session.setUserId(identity.get_id());
+        session.setUserId(user.get_id());
         session.setToken(accessToken);
         sessionRepository.save(session);
         response = TokenResponse.builder()
@@ -203,17 +202,17 @@ public class LoginService {
     }
 
     private void validateClientCredentials(TokenRequest tokenRequest) {
-        if ( StringUtils.isEmpty(tokenRequest.getClientAssertion()) && StringUtils.isEmpty(tokenRequest.getClientId())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client ID or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
+        if ( StringUtils.isEmpty(tokenRequest.getClientAssertion()) && StringUtils.isEmpty(tokenRequest.getUserId())){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Either User ID or User Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
-        if ( !StringUtils.isEmpty(tokenRequest.getClientId()) && (StringUtils.isEmpty(tokenRequest.getClientSecret()) && StringUtils.isEmpty(tokenRequest.getClientAssertion()) )){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Either Client Secret or Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
+        if ( !StringUtils.isEmpty(tokenRequest.getUserId()) && (StringUtils.isEmpty(tokenRequest.getClientSecret()) && StringUtils.isEmpty(tokenRequest.getClientAssertion()) )){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Either User Secret or User Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
         if ( !StringUtils.isEmpty(tokenRequest.getClientAssertion()) && StringUtils.isEmpty(tokenRequest.getClientAssertionType())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion Type is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User Assertion Type is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
         if ( !StringUtils.isEmpty(tokenRequest.getClientAssertionType()) && StringUtils.isEmpty(tokenRequest.getClientAssertion())  ){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Client Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User Assertion is mandatory for "+GrantType.CLIENT_CREDENTIALS.getName());
         }
     }
 
@@ -228,45 +227,45 @@ public class LoginService {
     }
 
     public PasswordResetOtp passwordResetInitiate(String email) {
-        Identity identity = identityRepository.findByEmail(email);
-        if (identity == null || identity.get_id() == null) {
-            log.error("Identity not found {}", email);
+        User user = userRepository.findByEmail(email);
+        if (user == null || user.get_id() == null) {
+            log.error("User not found {}", email);
             throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
         }
         String salt = RandomStringUtils.random(6, "123456");
         PasswordResetOtp otp = PasswordResetOtp.builder()
                 .otp(salt)
-                .userId(identity.get_id())
+                .userId(user.get_id())
                 .start(LocalDateTime.now())
                 .build();
 
         PasswordResetOtp savedOtp = resetRepository.save(otp);
         log.info("Generated otp {}", savedOtp);
-        emailService.setOnetimePasscode(email, identity.getFullName(), savedOtp.getOtp());
+        emailService.setOnetimePasscode(email, user.getFullName(), savedOtp.getOtp());
         return savedOtp;
     }
 
     public void passwordResetSubmit(PasswordResetSubmit req) {
         try{
-            Identity identity = identityRepository.findByEmail(req.getEmail());
-            if (identity == null || identity.get_id() == null) {
+            User user = userRepository.findByEmail(req.getEmail());
+            if (user == null || user.get_id() == null) {
                 log.error("here was a problem. Cannot recognize the email. {}", req.getEmail());
                 throw new ApiException(HttpStatus.BAD_REQUEST, "There was a problem. Cannot recognize the email.");
             }
             boolean changed = false;
-            final List<PasswordResetOtp> list = resetRepository.findAllByUserId(identity.get_id());
+            final List<PasswordResetOtp> list = resetRepository.findAllByUserId(user.get_id());
             if (! CollectionUtils.isEmpty(list)){
                 for (PasswordResetOtp passwordResetOtp : list) {
                     if (StringUtils.equals(passwordResetOtp.getOtp(), req.getOtp())) {
-                        Account account = accountRepository.findByIdentity(identity.get_id());
+                        Account account = accountRepository.findByUserId(user.get_id());
                         account.setPassword(req.getPassword());
                         account.setPasswordChanged(LocalDateTime.now());
                         accountRepository.save(account);
                         Query query = new Query();
-                        query.addCriteria(Criteria.where("userId").is(identity.get_id()));
+                        query.addCriteria(Criteria.where("userId").is(user.get_id()));
                         final DeleteResult deleteResult = mongoTemplate.remove(query, "resets");
-                        log.info("Password reset successful for customer {}. Removed old otp {}", identity.getEmail(), deleteResult.getDeletedCount());
-                        emailService.setPasswordResetConfirmation(identity.getEmail(), identity.getFullName());
+                        log.info("Password reset successful for user {}. Removed old otp {}", user.getEmail(), deleteResult.getDeletedCount());
+                        emailService.setPasswordResetConfirmation(user.getEmail(), user.getFullName());
                         changed = true;
                         break;
                     }
@@ -280,7 +279,7 @@ public class LoginService {
         }
     }
 
-    public Identity updatePassword(MultiValueMap form) {
+    public User updatePassword(MultiValueMap form) {
         return null;
     }
 }

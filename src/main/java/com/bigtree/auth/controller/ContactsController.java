@@ -18,7 +18,7 @@ public class ContactsController {
     @Autowired
     ContactsService contactsService;
 
-    @GetMapping(value = "/api/contacts")
+    @GetMapping(value = "/v1/contacts")
     public ResponseEntity<List<Contacts>> getContacts(
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "mobile", required = false) String mobile,
@@ -33,7 +33,7 @@ public class ContactsController {
         return ResponseEntity.ok(contacts);
     }
 
-    @PostMapping(value = "/api/contacts")
+    @PostMapping(value = "/v1/contacts")
     public ResponseEntity<Contacts> create(@RequestBody Contacts req) {
         log.info("Creating new contacts from {}", req.getEmail());
         Contacts contacts = contactsService.create(req);
@@ -43,7 +43,7 @@ public class ContactsController {
         return ResponseEntity.status(201).body(contacts);
     }
 
-    @DeleteMapping(value = "/api/contacts")
+    @DeleteMapping(value = "/v1/contacts")
     public ResponseEntity<Void> delete(@RequestParam("email") String email) {
         log.info("Deleting contacts from {}", email);
         contactsService.delete(email);

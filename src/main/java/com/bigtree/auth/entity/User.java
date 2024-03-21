@@ -5,19 +5,19 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Document(collection = "identities")
+@Document(collection = "users")
 @Builder
 @Data
-public class Identity {
+public class User {
 
     @MongoId
     private String _id;
-    private String clientId;
+    private String userId;
     private String firstName;
     private String lastName;
     private String email;
     private String mobile;
-    private ClientType clientType;
+    private UserType userType;
 
     public String getFullName(){
         return firstName+ " "+ lastName;
