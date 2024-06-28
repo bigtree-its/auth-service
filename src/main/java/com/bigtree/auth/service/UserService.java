@@ -75,6 +75,11 @@ public class UserService {
         if (optional.isPresent()) {
             log.info("Identity already exist. Deleting identity");
             repository.deleteById(_id);
+            Account byUserId = accountRepository.findByUserId(_id);
+            if ( byUserId != null){
+                accountRepository.delete(byUserId);
+                log.info("Cleaned up accounts for user {}", _id);
+            }
         } else {
             log.error("Identity not found");
             throw new ApiException(HttpStatus.BAD_REQUEST, "Identity not found");
@@ -111,6 +116,10 @@ public class UserService {
             log.error("User password is mandatory");
             throw new ApiException(HttpStatus.BAD_REQUEST, "User password is mandatory");
         }
+        if (req.getUserType() == UserType.Business && req.getBusinessType() == null) {
+            log.error("Business Type is mandatory");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Business Type is mandatory");
+        }
         User existing = repository.findByEmail(req.getEmail());
         if (existing != null) {
             log.error("User already exist {}", existing.getEmail());
@@ -134,13 +143,15 @@ public class UserService {
         final User user = repository.save(newUser);
         if (user.get_id() != null) {
             log.info("New user created {} as {}", user.get_id(), user.getUserType().name());
+            String activationCode = RandomStringUtils.random(6, "123456789abcdefghijklmno");
             Account account = accountRepository.save(Account.builder()
                     .userId(user.get_id())
-                    .password(StringUtils.isEmpty(clientSecret)?  req.getPassword(): clientSecret)
+                    .activationCode(activationCode)
+                    .password(StringUtils.isEmpty(clientSecret) ? req.getPassword() : clientSecret)
                     .passwordChanged(LocalDateTime.now())
                     .build());
             if (account.get_id() != null) {
-                log.info("Account secrets created for user {} with id {}", user.getEmail(), user.get_id());
+                log.info("Account created for user {} with id {}", user.getEmail(), user.get_id());
                 if (req.getUserType() == UserType.CustomerApp || req.getUserType() == UserType.SupplierApp) {
                     Map<String, String> claims = new HashMap<>();
                     claims.put("client_id", user.getUserId());
@@ -148,10 +159,10 @@ public class UserService {
                     claims.put("client_type", user.getUserType().getName());
                     claims.put("client_email", user.getEmail());
                     message = jwtService.createPrivateKeyJwt(claims, user);
-                }else{
+                } else {
                     message = "Signup successful";
                 }
-                emailService.senSignupCompletion(user);
+                emailService.sendAccountActivationEmail(account,user);
                 return ApiResponse.builder().endpoint("/register").message(message).build();
             }
         }
@@ -160,11 +171,10 @@ public class UserService {
 
     private String generateUserId(UserType userType) {
 
-        String prefix = "desi-" + userType.getCode() + "-";
         String userId = "";
         boolean unique = false;
         while (!unique) {
-            userId = prefix + RandomStringUtils.random(6, "123456");
+            userId = RandomStringUtils.random(6, "123456");
             final User exist = repository.findByUserId(userId);
             unique = exist == null;
         }
@@ -180,21 +190,28 @@ public class UserService {
     }
 
     public void deleteAll() {
-        repository.deleteAll();
+        List<User> all = repository.findAll();
+        for (User user : all) {
+            Account account = accountRepository.findByUserId(user.get_id());
+            if ( account != null){
+                accountRepository.delete(account);
+            }
+            repository.delete(user);
+        }
     }
 
     public ApiResponse getPrivateKeyJwt(@Valid MultiValueMap<String, String> formParams) {
-        Map<String,String> parameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>();
         for (String theKey : formParams.keySet()) {
             parameters.put(theKey, formParams.getFirst(theKey));
         }
         AuthRequest authRequest = prepareRequest(parameters);
-        if ( StringUtils.isNotEmpty(authRequest.getClientEmail())){
+        if (StringUtils.isNotEmpty(authRequest.getClientEmail())) {
             User user = repository.findByEmail(authRequest.getClientEmail());
-            if ( user != null){
+            if (user != null) {
                 log.info("Found a user with email {}", authRequest.getClientEmail());
                 Account account = accountRepository.findByUserId(user.get_id());
-                if ( account != null){
+                if (account != null) {
                     Map<String, String> claims = new HashMap<>();
                     claims.put("user_id", user.getUserId());
                     claims.put("user_secret", account.getPassword());
@@ -239,20 +256,37 @@ public class UserService {
 
     public User updatePersonal(PersonalDetails personalDetails) {
         Optional<User> byId = repository.findById(personalDetails.getCustomerId());
-        if ( byId.isPresent()){
+        if (byId.isPresent()) {
             User user = byId.get();
-            if ( StringUtils.isEmpty(personalDetails.getFirstName())){
+            if (StringUtils.isEmpty(personalDetails.getFirstName())) {
                 user.setFirstName(personalDetails.getFirstName());
             }
-            if ( StringUtils.isEmpty(personalDetails.getLastName())){
+            if (StringUtils.isEmpty(personalDetails.getLastName())) {
                 user.setLastName(personalDetails.getLastName());
             }
-            if ( StringUtils.isEmpty(personalDetails.getMobile())){
+            if (StringUtils.isEmpty(personalDetails.getMobile())) {
                 user.setMobile(personalDetails.getMobile());
             }
             return repository.save(user);
         }
         log.info("Customer not found {}", personalDetails.getCustomerId());
         return null;
+    }
+
+    public void activateAccount(ActivateAccountRequest req) {
+        log.info("Activating account {}", req.getAccountId());
+        Optional<Account> accountOps = accountRepository.findById(req.getAccountId());
+        if ( accountOps.isPresent()){
+            Account account = accountOps.get();
+            if (account.getActivationCode().equalsIgnoreCase(req.getActivationCode())){
+                account.setActive(true);
+                accountRepository.save(account);
+                log.info("Account {} is activated", account.get_id());
+            }else{
+                throw new ApiException(HttpStatus.BAD_REQUEST, "Activation Code not found");
+            }
+        }else{
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Account not found");
+        }
     }
 }

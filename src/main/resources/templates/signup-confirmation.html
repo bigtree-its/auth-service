@@ -3,15 +3,14 @@
 
 <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
     <style type="text/css">
-        @import url('https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200&display=swap');
         body,
         table,
         td,
@@ -19,9 +18,7 @@
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
         }
-        .logo-text{
-           font-family: "Protest Riot", sans-serif;
-        }
+
         table,
         td {
             mso-table-lspace: 0pt;
@@ -65,28 +62,29 @@
             width: 600px;
             margin: auto;
         }
-.button {
-      background-color: #3869D4;
-      border-top: 10px solid #3869D4;
-      border-right: 18px solid #3869D4;
-      border-bottom: 10px solid #3869D4;
-      border-left: 18px solid #3869D4;
-      display: inline-block;
-      color: #FFF;
-      text-decoration: none;
-      border-radius: 3px;
-      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
-      -webkit-text-size-adjust: none;
-      box-sizing: border-box;
-    }
 
-    .button--green {
-      background-color: #22BC66;
-      border-top: 10px solid #22BC66;
-      border-right: 18px solid #22BC66;
-      border-bottom: 10px solid #22BC66;
-      border-left: 18px solid #22BC66;
-    }
+        .button {
+            background-color: #3869D4;
+            border-top: 10px solid #3869D4;
+            border-right: 18px solid #3869D4;
+            border-bottom: 10px solid #3869D4;
+            border-left: 18px solid #3869D4;
+            display: inline-block;
+            color: #FFF;
+            text-decoration: none;
+            border-radius: 3px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
+            -webkit-text-size-adjust: none;
+            box-sizing: border-box;
+        }
+
+        .button--green {
+            background-color: #22BC66;
+            border-top: 10px solid #22BC66;
+            border-right: 18px solid #22BC66;
+            border-bottom: 10px solid #22BC66;
+            border-left: 18px solid #22BC66;
+        }
 
         .greetings-section {
             margin-top: 30px;
@@ -110,7 +108,6 @@
             .mobile-hide {
                 display: none !important;
             }
-
             .mobile-center {
                 text-align: center !important;
             }
@@ -125,31 +122,30 @@
 <body style="margin: 0 !important; padding: 0 !important; ">
 <div class="main-body">
     <div class="banner">
-        <h1 class="logo-text" style="font-size:20px; font-weight: 700; margin: 0; line-height: 100px;">CHUMMA</h1>
+        <h1 style="font-size:20px; font-weight: 200; margin: 0; line-height: 100px;color: red;">Nongu
+        </h1>
     </div>
     <div style="font-size: 18px;padding: 10px;font-weight: 600; line-height: 20px;text-align: left;color: #212121;">
-        Welcome to DesiTimes
+        Almost done...
     </div>
     <div style="margin-top:20px;padding: 10px;color: #212121;">
         Hi <span th:utext="${customerName}"></span>,
     </div>
     <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        Welcome to DesiTimes, the largest independent portal for desi lovers.<br/>
-        Now you are a part of the DesiTimes community, access to 100s of local small scale traders, who
-        love to curate healthy, hygiene food for the people who love to eat homemade food. Also buy & sell desi products in UK
-
-        Happy Trading!
-        Kind regards,
-        DesiTimes
+        Click the button below to activate your new Nongu account.
     </div>
     <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
         <tr>
             <td align="center">
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+                    <!--                    <tr>-->
+                    <!--                        <td align="center">-->
+                    <!--                            <a th:href="@{http://localhost:4200/password_reset/submit?email={email}&&otp={otp}(email = ${customerEmail}, otp = ${otp})}" class="f-fallback button button&#45;&#45;green" target="_blank">Reset your password</a>-->
+                    <!--                        </td>-->
+                    <!--                    </tr>-->
                     <tr>
                         <td align="center">
-                            <a th:href="@{http://localhost:4200/login}" class="f-fallback button button--green"
-                               target="_blank">Login</a>
+                            <a th:href="@{http://localhost:4200/account_activate?qs={qs}(qs = ${queryString})}" class="f-fallback button button--green" target="_blank">Activate my account</a>
                         </td>
                     </tr>
                 </table>
@@ -158,14 +154,12 @@
     </table>
     <!--    <span style="font-weight:900;font-size:25px;margin-top:20px;padding: 10px;color: #212121;"  th:utext="${otp}"></span>-->
     <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        If you need additional assistance, or you did not make this change, please contact
-        contact.desitimes@gmail.com
+        If you need additional assistance, or you did not make this change, please contact help.nongu@gmail.com
     </div>
     <div style="margin-top:50px;border-top:1px solid #f1f1f1;color: #d3d3d3;padding:20px 0;text-align:left;">
         <div>
-            © 2024 DesTimes Limited. All Rights Reserved
-            <br>
-            359, Glasgow Road, Glasgow, G760HE +44 141 644 0955
+            © 2024 Nongu Limited. All Rights Reserved
+            <br> 359, Glasgow Road, Glasgow, G760HE +44 141 644 0955
         </div>
     </div>
 </div>

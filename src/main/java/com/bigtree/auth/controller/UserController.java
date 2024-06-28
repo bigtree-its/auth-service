@@ -32,9 +32,6 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    LoginService loginService;
-
-    @Autowired
     SessionService sessionService;
 
     @GetMapping("")

@@ -17,7 +17,9 @@ public class User {
     private String lastName;
     private String email;
     private String mobile;
+    private String businessId;
     private UserType userType;
+    private BusinessType businessType;
 
     public String getFullName(){
         return firstName+ " "+ lastName;

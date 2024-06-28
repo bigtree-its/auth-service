@@ -21,7 +21,7 @@ public class JwtServiceTest {
         final String idToken = jwtService.generateIdToken(User.builder()
                 .email("test@gmail.com")
                 ._id("auth-id")
-                .userType(UserType.Supplier)
+                .userType(UserType.Business)
                 .firstName("firstName")
                 .lastName("lastName")
                 .mobile("9897545454545")

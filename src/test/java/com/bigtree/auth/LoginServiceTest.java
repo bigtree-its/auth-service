@@ -43,7 +43,7 @@ public class LoginServiceTest {
     @Test()
     @Order(2)
     public void signupSupplier() {
-        final UserRegistrationRequest registerRequest = DummyData.createRegisterRequest(UserType.Supplier);
+        final UserRegistrationRequest registerRequest = DummyData.createRegisterRequest(UserType.Business);
         ApiResponse response  =  userService.registerUser(registerRequest);
         Assertions.assertNotNull(response);
     }

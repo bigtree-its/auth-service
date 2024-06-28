@@ -28,7 +28,7 @@ public class DummyData {
         String clientEmail = "";
         switch (userType){
             case Customer -> clientEmail = CUSTOMER_EMAIL;
-            case Supplier -> clientEmail = SUPPLIER_EMAIL;
+            case Business -> clientEmail = SUPPLIER_EMAIL;
             case Employee -> clientEmail = EMPLOYEE_EMAIL;
             case CustomerApp -> clientEmail = CUSTOMER_APP_EMAIL;
             case SupplierApp -> clientEmail = SUPPLIER_APP_EMAIL;

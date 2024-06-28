@@ -28,26 +28,32 @@ public class UserAuthenticationService {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
-    public TokenResponse authenticate(AuthRequest tokenRequest){
+    public TokenResponse authenticate(AuthRequest tokenRequest) {
         TokenResponse response;
-        if ( StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Username and Password are mandatory for "+ GrantType.PASSWORD.name()+ " Grant Type");
+        if (StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Username and Password are mandatory for " + GrantType.PASSWORD.name() + " Grant Type");
         }
         final User user = userRepository.findByEmail(tokenRequest.getUsername());
-        if ( user != null) {
+        if (user != null) {
             log.info("User found {} as {}", tokenRequest.getUsername(), user.getUserType().getName());
             Account account = accountRepository.findByUserIdAndPassword(user.get_id(), tokenRequest.getPassword());
             if (account != null) {
-                String token = jwtTokenUtil.generateToken(user);
-                response = TokenResponse.builder().accessToken(token).build();
-                log.info("Authentication successful for user {}", tokenRequest.getUsername());
+                if (account.isActive()) {
+                    String token = jwtTokenUtil.generateToken(user);
+                    response = TokenResponse.builder().accessToken(token).build();
+                    log.info("Authentication successful for user {}", tokenRequest.getUsername());
+                } else {
+                    log.error("Authentication failed for user {}", tokenRequest.getUsername());
+                    throw new ApiException(HttpStatus.UNAUTHORIZED, "Account not activated");
+                }
+
             } else {
-                log.error("Authentication failed for user {}",  tokenRequest.getUsername());
+                log.error("Authentication failed for user {}", tokenRequest.getUsername());
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
             }
-        }else{
-            log.error("User not found {}",  tokenRequest.getUsername());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "User not found "+ tokenRequest.getUsername());
+        } else {
+            log.error("User not found {}", tokenRequest.getUsername());
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "User not found " + tokenRequest.getUsername());
         }
         return response;
     }

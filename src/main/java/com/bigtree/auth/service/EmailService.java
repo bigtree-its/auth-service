@@ -1,6 +1,7 @@
 package com.bigtree.auth.service;
 
 import com.bigtree.auth.config.ResourcesConfig;
+import com.bigtree.auth.entity.Account;
 import com.bigtree.auth.entity.User;
 import com.bigtree.auth.security.CryptoHelper;
 import jakarta.mail.MessagingException;
@@ -46,7 +47,7 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", customerName);
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
-            sendMail(email, "Reset your password | DesiTimes", "password-reset-instructions", params);
+            sendMail(email, "Reset your password | Nongu", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -91,18 +92,25 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | DesiTimes", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | Nongu", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
     }
 
-    public void senSignupCompletion(User user) {
-        log.info("Sending signup confirmation email {}", user.getEmail());
+    public void sendAccountActivationEmail(Account account, User user) {
+        log.info("Sending account activation email {}", user.getEmail());
         try {
+            Map<String, String> queries = new HashMap<>();
+            queries.put("activationCode", account.getActivationCode());
+            queries.put("accountId", account.get_id());
+            final String queryString = mapToQueryString(queries);
+
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", user.getFullName());
-            sendMail(user.getEmail(), "Welcome to DesiTimes", "signup-confirmation", params);
+            params.put("queryString", cryptoHelper.encryptUrl(queryString));
+
+            sendMail(user.getEmail(), user.getFirstName().toUpperCase()+ ", finish setting up your new Nongu Account", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

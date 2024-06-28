@@ -5,32 +5,22 @@ import lombok.Getter;
 @Getter
 public enum UserType {
 
-    Customer("Customer", "cus"),
-    Supplier("Supplier", "sup"),
-    Employee("Employee", "emp"),
-    CustomerApp("CustomerApp", "capp"),
-    SupplierApp("SupplierApp", "sapp");
+    Admin("Admin"),
+    Customer("Customer"),
+    Business("Business"),
+    Employee("Employee"),
+    CustomerApp("CustomerApp"),
+    SupplierApp("SupplierApp");
 
     private final String name;
-    private final String code;
 
-    UserType(String name, String code){
+    UserType(String name){
         this.name = name;
-        this.code = code;
     }
 
     public static UserType fromName(String name) {
         for (UserType b : UserType.values()) {
             if (b.name.equalsIgnoreCase(name)) {
-                return b;
-            }
-        }
-        return null;
-    }
-
-    public static UserType fromCode(String code) {
-        for (UserType b : UserType.values()) {
-            if (b.code.equalsIgnoreCase(code)) {
                 return b;
             }
         }
