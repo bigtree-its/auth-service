@@ -241,7 +241,7 @@ public class LoginService {
 
         PasswordResetOtp savedOtp = resetRepository.save(otp);
         log.info("Generated otp {}", savedOtp);
-        emailService.setOnetimePasscode(email, user.getFullName(), savedOtp.getOtp());
+        emailService.setOnetimePasscode(email, user.getName(), savedOtp.getOtp());
         return savedOtp;
     }
 
@@ -265,7 +265,7 @@ public class LoginService {
                         query.addCriteria(Criteria.where("userId").is(user.get_id()));
                         final DeleteResult deleteResult = mongoTemplate.remove(query, "resets");
                         log.info("Password reset successful for user {}. Removed old otp {}", user.getEmail(), deleteResult.getDeletedCount());
-                        emailService.setPasswordResetConfirmation(user.getEmail(), user.getFullName());
+                        emailService.setPasswordResetConfirmation(user.getEmail(), user.getName());
                         changed = true;
                         break;
                     }

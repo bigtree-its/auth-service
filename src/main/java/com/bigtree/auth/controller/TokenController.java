@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Slf4j
-@RequestMapping("/v1/auth")
-public class AuthController {
+@RequestMapping("/tokens/v1")
+public class TokenController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -29,9 +29,9 @@ public class AuthController {
     @Autowired
     UserAuthenticationService userAuthenticationService;
 
-    @RequestMapping(value = "/token", method = RequestMethod.POST)
+    @PostMapping(value = "")
     public ResponseEntity<TokenResponse> token(@RequestBody AuthRequest authenticationRequest) throws Exception {
-        log.info("Request for user token");
+        log.info("Requesting new access token");
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         TokenResponse tokenResponse = userAuthenticationService.authenticate(authenticationRequest);
         return ResponseEntity.ok(tokenResponse);

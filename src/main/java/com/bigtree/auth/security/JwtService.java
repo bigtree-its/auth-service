@@ -77,8 +77,7 @@ public class JwtService {
 
     public String generateIdToken(User user){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
+        claims.put("name", user.getName());
         claims.put("clientId", user.getUserId());
         claims.put("recordId", user.get_id());
         claims.put("clientType", user.getUserType().getName());

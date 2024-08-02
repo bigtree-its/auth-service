@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @WebMvcTest(MachineAuthController.class)
 @Disabled
-public class MachineAuthControllerTest {
+public class MachineTokenControllerTest {
 
     @Autowired
     MockMvc mockMvc;

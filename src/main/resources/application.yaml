@@ -5,7 +5,7 @@ crypto:
   key: 1234567891234567
 
 auth:
-  permitAll: /v1/users/private-key-jwt,/v1/auth/machine/token,/v1/auth/token,/v1/users/signup,/v1/users,/v1/auth/account_activate
+  permitAll: /users/v1/private-key-jwt,/users/v1/signup,/users/v1,/accounts/v1/activate,/auth/v1/machine/token,/passwords/v1,/passwords/v1/reset_initiate,/passwords/v1/reset_submit,/tokens/v1,/users/v1/*
 springdoc:
   api-docs:
     path: /api-docs
@@ -20,7 +20,8 @@ spring:
     banner-mode: "off"
   data:
     mongodb:
-      uri: mongodb+srv://productsuser:productspassword@cluster0.wzm30.gcp.mongodb.net/?retryWrites=true&w=majority
+      #bigtree.authz@gmail.com
+      uri: mongodb+srv://bigtreeauthz:SvGkhNpbVtJaY0Q2@bigtreeauthzcluster.ajaigyp.mongodb.net/?retryWrites=true&w=majority&appName=BigtreeAuthzCluster
       database: test
   mail:
     default-encoding: UTF-8

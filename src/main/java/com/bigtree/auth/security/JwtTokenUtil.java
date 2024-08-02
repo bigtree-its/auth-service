@@ -72,11 +72,11 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(User user) {
         log.info("Generating access token..");
         Map<String, String> claims = new HashMap<>();
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
+        claims.put("name", user.getName());
         claims.put("userType", user.getUserType().getName());
-        if ( user.getBusinessType() != null){
-            claims.put("businessType", user.getBusinessType().getName());
+        if (user.getUserType() == UserType.Business){
+            claims.put("businessType", user.getBusinessType());
+            claims.put("businessId", user.getBusinessId());
         }
         claims.put("mobile", user.getMobile());
         claims.put("recordId", user.get_id());

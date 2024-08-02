@@ -14,7 +14,7 @@ import org.springframework.util.MultiValueMap;
 
 @Disabled
 @SpringBootTest(classes = AuthApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class MachineAuthControllerIntegrationTest {
+public class MachineTokenControllerIntegrationTest {
 
     @LocalServerPort
     private int port;

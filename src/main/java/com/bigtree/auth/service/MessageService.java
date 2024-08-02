@@ -1,8 +1,8 @@
 package com.bigtree.auth.service;
 
-import com.bigtree.auth.entity.Contacts;
+import com.bigtree.auth.entity.Message;
 import com.bigtree.auth.error.ApiException;
-import com.bigtree.auth.repository.ContactsRepository;
+import com.bigtree.auth.repository.MessageRepository;
 import com.mongodb.client.result.DeleteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -18,34 +18,34 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ContactsService {
+public class MessageService {
 
     @Autowired
-    ContactsRepository contactsRepository;
+    MessageRepository messageRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
 
-    public Contacts create(Contacts contacts) {
-        if ( StringUtils.isEmpty(contacts.getEmail())){
+    public Message create(Message message) {
+        if ( StringUtils.isEmpty(message.getEmail())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Email is mandatory");
         }
-        if ( StringUtils.isEmpty(contacts.getMobile())){
+        if ( StringUtils.isEmpty(message.getMobile())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "Mobile is mandatory");
         }
-        if ( StringUtils.isEmpty(contacts.getAbout())){
+        if ( StringUtils.isEmpty(message.getAbout())){
             throw new ApiException(HttpStatus.BAD_REQUEST, "About is mandatory");
         }
-        if ( StringUtils.isEmpty(contacts.getMessage())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Message is mandatory");
+        if ( StringUtils.isEmpty(message.getContent())){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Message Content is mandatory");
         }
-        log.info("Storing new contact from {}", contacts.getEmail());
-        contacts.setDate(LocalDate.now());
-         return contactsRepository.save(contacts);
+        log.info("Storing new message from {}", message.getEmail());
+        message.setDate(LocalDate.now());
+         return messageRepository.save(message);
     }
 
-    public List<Contacts> lookup(String email, String mobile, String about, Boolean responded, LocalDate from, LocalDate to) {
-        log.info("Finding contacts");
+    public List<Message> lookup(String email, String mobile, String about, Boolean responded, LocalDate from, LocalDate to) {
+        log.info("Finding messages");
         Query query = new Query();
         if (StringUtils.isNotEmpty(email)) {
             query.addCriteria(Criteria.where("email").is(email));
@@ -66,14 +66,14 @@ public class ContactsService {
         } else if (from == null && to != null) {
             query.addCriteria(Criteria.where("date").lte(to));
         }
-        return mongoTemplate.find(query, Contacts.class);
+        return mongoTemplate.find(query, Message.class);
     }
 
     public void delete(String email) {
-        log.info("Delete all contacts from {}", email);
+        log.info("Delete all message from {}", email);
         Query query = new Query();
         query.addCriteria(Criteria.where("email").is(email));
-        final DeleteResult deleteResult = mongoTemplate.remove(query, "contacts");
-        log.info("{} contacts deleted for {}", deleteResult.getDeletedCount(), email);
+        final DeleteResult deleteResult = mongoTemplate.remove(query, "message");
+        log.info("{} message deleted for {}", deleteResult.getDeletedCount(), email);
     }
 }

@@ -65,22 +65,10 @@
             margin: auto;
             font-size: 20px;
             font-family: 'Arial';
-            color: #333;
+            color: #ffb524;
         }
-
-        .button {
-            background-color: #3869D4;
-            border-top: 10px solid #3869D4;
-            border-right: 18px solid #3869D4;
-            border-bottom: 10px solid #3869D4;
-            border-left: 18px solid #3869D4;
-            display: inline-block;
-            color: #FFF;
-            text-decoration: none;
-            border-radius: 3px;
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
-            -webkit-text-size-adjust: none;
-            box-sizing: border-box;
+        .ii a[href] {
+                color: #fff;
         }
 
         .footer-section {
@@ -118,7 +106,7 @@
 <body style="margin: 0 !important; padding: 0 !important; ">
 <div class="main-body">
     <div class="banner">
-        <span>Thappad</span>
+        <span>Gringoz</span>
     </div>
     <div style="font-size: 15px;padding: 10px;font-weight: 600; line-height: 20px;text-align: left;color: #212121;">
         Almost done...
@@ -127,7 +115,7 @@
         Hi <span th:utext="${customerName}"></span>,
     </div>
     <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        Click the button below to activate your new Thappad account.
+        Click the button below to activate your new Gringoz account.
     </div>
     <div style="margin-top:30px">
         <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -135,9 +123,9 @@
                 <td align="center">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                         <tr>
-                            <td align="center">
+                            <td align="center" style="background-color: #ffb524;padding 10px 20px;text-decoration: none;">
                                 <a th:href="@{http://localhost:4200/account_activate?qs={qs}(qs = ${queryString})}"
-                                   class="button" target="_blank">Activate my account</a>
+                                   style="background-color: #ffb524;padding 10px 20px;text-decoration: none;" target="_blank">Activate my account</a>
                             </td>
                         </tr>
                     </table>
@@ -152,7 +140,7 @@
     </div>
     <div style="margin-top:50px;border-top:1px solid #f1f1f1;color: #d3d3d3;padding:20px 0;text-align:left;">
         <div>
-            © 2024 Thappad Limited. All Rights Reserved
+            © 2024 Gringoz Limited. All Rights Reserved
             <br> 359, Glasgow Road, Glasgow, G760HE +44 141 644 0955
         </div>
     </div>

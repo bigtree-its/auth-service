@@ -107,10 +107,10 @@ public class EmailService {
             final String queryString = mapToQueryString(queries);
 
             Map<String, Object> params = new HashMap<>();
-            params.put("customerName", user.getFullName());
+            params.put("customerName", user.getName());
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
 
-            sendMail(user.getEmail(), user.getFirstName().toUpperCase()+ ", finish setting up your new Thappad Account", "signup-confirmation", params);
+            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new Thappad Account", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

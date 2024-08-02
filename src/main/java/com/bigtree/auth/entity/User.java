@@ -13,16 +13,11 @@ public class User {
     @MongoId
     private String _id;
     private String userId;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String email;
     private String mobile;
     private String businessId;
     private UserType userType;
-    private BusinessType businessType;
-
-    public String getFullName(){
-        return firstName+ " "+ lastName;
-    }
+    private String businessType;
 
 }

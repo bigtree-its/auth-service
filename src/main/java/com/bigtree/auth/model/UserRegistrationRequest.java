@@ -9,12 +9,12 @@ import lombok.Data;
 @Builder
 public class UserRegistrationRequest {
 
-    private String firstName;
-    private String lastName;
+    private String name;
     private String email;
     private String mobile;
     private String password;
     private UserType userType;
-    private BusinessType businessType;
+    private String businessType;
+    private String businessId;
 
 }

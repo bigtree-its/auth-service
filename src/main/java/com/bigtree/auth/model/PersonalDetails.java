@@ -9,6 +9,6 @@ public class PersonalDetails {
 
     private String customerId;
     private String mobile;
-    private String firstName;
-    private String lastName;
+    private String name;
+
 }

@@ -39,8 +39,15 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         String servletPath = request.getServletPath();
         log.info("Authorizing the request {}", servletPath);
-        if( permitAll.contains(servletPath.trim()) ){
-            log.info("The requested url is whitelisted..");
+        boolean whitelisted = false;
+        for (String url : permitAll) {
+            if ( servletPath.equalsIgnoreCase(url) || servletPath.startsWith(url)){
+                whitelisted = true;
+                break;
+            }
+        }
+
+        if ( whitelisted){
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     "PermitAll", null, null);
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
@@ -49,6 +56,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             log.info("The requested url is not whitelisted..");
             authorise(request);
         }
+
 
         chain.doFilter(request, response);
     }

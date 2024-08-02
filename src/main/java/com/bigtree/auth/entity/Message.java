@@ -6,19 +6,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@Document(collection = "contacts")
+@Document(collection = "messages")
 @Builder
 @Data
-public class Contacts {
+public class Message {
     @MongoId
     private String _id;
     private String about;
     private String fullName;
     private String email;
     private String mobile;
-    private String message;
+    private String content;
     private LocalDate date;
     private boolean responded;
 }

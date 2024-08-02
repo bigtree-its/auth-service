@@ -47,11 +47,8 @@ public class UserService {
         if (optional.isPresent()) {
             log.info("Identity already exist. Updating");
             User exist = optional.get();
-            if (StringUtils.isNotEmpty(user.getFirstName())) {
-                exist.setFirstName(user.getFirstName());
-            }
-            if (StringUtils.isNotEmpty(user.getLastName())) {
-                exist.setLastName(user.getLastName());
+            if (StringUtils.isNotEmpty(user.getName())) {
+                exist.setName(user.getName());
             }
             if (StringUtils.isNotEmpty(user.getMobile())) {
                 exist.setMobile(user.getMobile());
@@ -134,10 +131,11 @@ public class UserService {
         User newUser = User.builder()
                 .email(req.getEmail())
                 .userId(userId)
-                .firstName(req.getFirstName())
-                .lastName(req.getLastName())
+                .name(req.getName())
                 .mobile(req.getMobile())
                 .userType(req.getUserType())
+                .businessType(req.getBusinessType())
+                .businessId(req.getBusinessId())
                 .build();
 
         final User user = repository.save(newUser);
@@ -258,11 +256,8 @@ public class UserService {
         Optional<User> byId = repository.findById(personalDetails.getCustomerId());
         if (byId.isPresent()) {
             User user = byId.get();
-            if (StringUtils.isEmpty(personalDetails.getFirstName())) {
-                user.setFirstName(personalDetails.getFirstName());
-            }
-            if (StringUtils.isEmpty(personalDetails.getLastName())) {
-                user.setLastName(personalDetails.getLastName());
+            if (StringUtils.isEmpty(personalDetails.getName())) {
+                user.setName(personalDetails.getName());
             }
             if (StringUtils.isEmpty(personalDetails.getMobile())) {
                 user.setMobile(personalDetails.getMobile());

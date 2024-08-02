@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/v1/users")
+@RequestMapping("/users/v1")
 @CrossOrigin(origins = "*")
 public class UserController {
 
