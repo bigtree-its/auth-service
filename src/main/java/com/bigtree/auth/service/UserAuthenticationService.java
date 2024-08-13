@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +29,9 @@ public class UserAuthenticationService {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public TokenResponse authenticate(AuthRequest tokenRequest) {
         TokenResponse response;
         if (StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())) {
@@ -36,19 +40,23 @@ public class UserAuthenticationService {
         final User user = userRepository.findByEmail(tokenRequest.getUsername());
         if (user != null) {
             log.info("User found {} as {}", tokenRequest.getUsername(), user.getUserType().getName());
-            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), tokenRequest.getPassword());
+            Account account = accountRepository.findByUserId(user.get_id());
             if (account != null) {
-                if (account.isActive()) {
-                    String token = jwtTokenUtil.generateToken(user);
-                    response = TokenResponse.builder().accessToken(token).build();
-                    log.info("Authentication successful for user {}", tokenRequest.getUsername());
-                } else {
-                    log.error("Authentication failed for user {}", tokenRequest.getUsername());
-                    throw new ApiException(HttpStatus.UNAUTHORIZED, "Account not activated");
+                if ( passwordEncoder.matches(tokenRequest.getPassword(), account.getPassword())){
+                    if (account.isActive()) {
+                        String token = jwtTokenUtil.generateToken(user);
+                        response = TokenResponse.builder().accessToken(token).build();
+                        log.info("Authentication successful for user {}", tokenRequest.getUsername());
+                    } else {
+                        log.error("Authentication failed for user {}", tokenRequest.getUsername());
+                        throw new ApiException(HttpStatus.UNAUTHORIZED, "Account not activated");
+                    }
+                }else{
+                    log.error("Account password not matched for user {}", tokenRequest.getUsername());
+                    throw new ApiException(HttpStatus.UNAUTHORIZED, "Account password not matched");
                 }
-
             } else {
-                log.error("Authentication failed for user {}", tokenRequest.getUsername());
+                log.error("Account not found for user {}", tokenRequest.getUsername());
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
             }
         } else {

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -55,6 +56,9 @@ public class LoginService {
     @Autowired
     CryptoHelper cryptoHelper;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public TokenResponse token(@Valid MultiValueMap<String, String> formParams) {
 
         TokenResponse response = null;
@@ -87,29 +91,6 @@ public class LoginService {
         return response;
     }
 
-    private TokenResponse authTreePassword(TokenRequest tokenRequest) {
-        User user;
-        TokenResponse response;
-        if ( StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())){
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Username and Password are mandatory for "+GrantType.PASSWORD.name()+ " Grant Type");
-        }
-        user = userRepository.findByEmailAndUserType(tokenRequest.getUsername(), tokenRequest.getUserType());
-        if ( user != null) {
-            log.info("Found an identity {}", tokenRequest.getUsername());
-            Account account = accountRepository.findByUserIdAndPassword(user.get_id(), tokenRequest.getPassword());
-            if (account != null) {
-                response = generateToken(user);
-                log.info("Authentication successful for user {}", tokenRequest.getUsername());
-            } else {
-                log.error("Authentication failed for user {}",  tokenRequest.getUsername());
-                throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
-            }
-        }else{
-            log.error("Authentication failed for user {}",  tokenRequest.getUsername());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the user "+ tokenRequest.getUsername());
-        }
-        return response;
-    }
 
     private TokenResponse authTreeClientAssertion(TokenRequest tokenRequest) {
         log.info("Authenticating machine user");
@@ -257,8 +238,9 @@ public class LoginService {
             if (! CollectionUtils.isEmpty(list)){
                 for (PasswordResetOtp passwordResetOtp : list) {
                     if (StringUtils.equals(passwordResetOtp.getOtp(), req.getOtp())) {
+                        String password = passwordEncoder.encode(req.getPassword());
                         Account account = accountRepository.findByUserId(user.get_id());
-                        account.setPassword(req.getPassword());
+                        account.setPassword(password);
                         account.setPasswordChanged(LocalDateTime.now());
                         accountRepository.save(account);
                         Query query = new Query();

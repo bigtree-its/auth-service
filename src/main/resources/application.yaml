@@ -22,7 +22,7 @@ spring:
     mongodb:
       #bigtree.authz@gmail.com
       uri: mongodb+srv://bigtreeauthz:SvGkhNpbVtJaY0Q2@bigtreeauthzcluster.ajaigyp.mongodb.net/?retryWrites=true&w=majority&appName=BigtreeAuthzCluster
-      database: test
+      database: prod
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com

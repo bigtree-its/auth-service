@@ -3,6 +3,8 @@ package com.bigtree.auth.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -29,6 +31,11 @@ public class AppConfig implements WebMvcConfigurer {
         templateResolver.setCacheable(false);
         templateResolver.setCheckExistence(true);
         return templateResolver;
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder(16);
     }
 
     @Override

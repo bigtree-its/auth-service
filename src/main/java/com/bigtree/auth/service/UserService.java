@@ -15,6 +15,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
@@ -36,6 +37,9 @@ public class UserService {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     public List<User> getUsers() {
         log.info("Fetching all users");
@@ -142,10 +146,11 @@ public class UserService {
         if (user.get_id() != null) {
             log.info("New user created {} as {}", user.get_id(), user.getUserType().name());
             String activationCode = RandomStringUtils.random(6, "123456789abcdefghijklmno");
+            String password = StringUtils.isEmpty(clientSecret) ? req.getPassword() : clientSecret;
             Account account = accountRepository.save(Account.builder()
                     .userId(user.get_id())
                     .activationCode(activationCode)
-                    .password(StringUtils.isEmpty(clientSecret) ? req.getPassword() : clientSecret)
+                    .password(passwordEncoder.encode(password))
                     .passwordChanged(LocalDateTime.now())
                     .build());
             if (account.get_id() != null) {
