@@ -47,7 +47,7 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", customerName);
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
-            sendMail(email, "Reset your password | Thappad", "password-reset-instructions", params);
+            sendMail(email, "Reset your password | currific", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -92,7 +92,7 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | Thappad", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | currific", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -110,7 +110,7 @@ public class EmailService {
             params.put("customerName", user.getName());
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
 
-            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new Thappad Account", "signup-confirmation", params);
+            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new currific Account", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
