@@ -40,6 +40,12 @@ public class UserAuthenticationService {
         final User user = userRepository.findByEmail(tokenRequest.getUsername());
         if (user != null) {
             log.info("User found {} as {}", tokenRequest.getUsername(), user.getUserType().getName());
+            if (tokenRequest.getUserType() != null){
+                if ( user.getUserType() != tokenRequest.getUserType()){
+                    log.error("Usertype not matching for user {}", tokenRequest.getUsername());
+                    throw new ApiException(HttpStatus.UNAUTHORIZED, "Usertype not matched");
+                }
+            }
             Account account = accountRepository.findByUserId(user.get_id());
             if (account != null) {
                 if ( passwordEncoder.matches(tokenRequest.getPassword(), account.getPassword())){

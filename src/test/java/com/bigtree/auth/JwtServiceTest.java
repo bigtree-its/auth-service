@@ -22,8 +22,7 @@ public class JwtServiceTest {
                 .email("test@gmail.com")
                 ._id("auth-id")
                 .userType(UserType.Business)
-                .firstName("firstName")
-                .lastName("lastName")
+                .name("User Name")
                 .mobile("9897545454545")
                 .build());
         final String accessToken = jwtService.generateAccessToken(User.builder().build());
