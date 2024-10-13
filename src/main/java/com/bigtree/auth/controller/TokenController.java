@@ -32,7 +32,7 @@ public class TokenController {
     @PostMapping(value = "")
     public ResponseEntity<TokenResponse> token(@RequestBody AuthRequest authenticationRequest) throws Exception {
         log.info("Requesting new access token");
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        // authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         TokenResponse tokenResponse = userAuthenticationService.authenticate(authenticationRequest);
         return ResponseEntity.ok(tokenResponse);
     }

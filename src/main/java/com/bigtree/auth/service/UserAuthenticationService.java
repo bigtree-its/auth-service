@@ -5,6 +5,7 @@ import com.bigtree.auth.entity.User;
 import com.bigtree.auth.error.ApiException;
 import com.bigtree.auth.model.AuthRequest;
 import com.bigtree.auth.model.GrantType;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.model.TokenResponse;
 import com.bigtree.auth.repository.AccountRepository;
 import com.bigtree.auth.repository.UserRepository;
@@ -37,15 +38,13 @@ public class UserAuthenticationService {
         if (StringUtils.isEmpty(tokenRequest.getUsername()) || StringUtils.isEmpty(tokenRequest.getPassword())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Username and Password are mandatory for " + GrantType.PASSWORD.name() + " Grant Type");
         }
-        final User user = userRepository.findByEmail(tokenRequest.getUsername());
+         if (tokenRequest.getUserType() == null) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Token request is invalid");
+        }
+        log.info("Finding {} user with username {}", tokenRequest.getUserType(), tokenRequest.getUsername());
+        final User user = userRepository.findByEmailAndUserType(tokenRequest.getUsername(), tokenRequest.getUserType());
         if (user != null) {
-            log.info("User found {} as {}", tokenRequest.getUsername(), user.getUserType().getName());
-            if (tokenRequest.getUserType() != null){
-                if ( user.getUserType() != tokenRequest.getUserType()){
-                    log.error("Usertype not matching for user {}", tokenRequest.getUsername());
-                    throw new ApiException(HttpStatus.UNAUTHORIZED, "Usertype not matched");
-                }
-            }
+            log.info("Found a {} user with username {}",user.getUserType().getName(), tokenRequest.getUsername());
             Account account = accountRepository.findByUserId(user.get_id());
             if (account != null) {
                 if ( passwordEncoder.matches(tokenRequest.getPassword(), account.getPassword())){
@@ -66,8 +65,8 @@ public class UserAuthenticationService {
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "Cannot recognize the Username and Password");
             }
         } else {
-            log.error("User not found {}", tokenRequest.getUsername());
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "User not found " + tokenRequest.getUsername());
+            log.error("{} user not found with name {}",  tokenRequest.getUserType().getName(), tokenRequest.getUsername());
+            throw new ApiException(HttpStatus.UNAUTHORIZED,  tokenRequest.getUserType().getName() + " user not found with name " + tokenRequest.getUsername());
         }
         return response;
     }
