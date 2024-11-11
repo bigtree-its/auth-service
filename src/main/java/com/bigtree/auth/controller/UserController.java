@@ -115,5 +115,14 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/partner-signup", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ApiResponse> partnerSignup(@Valid @RequestBody PartnerSignupRequest request){
+        log.info("Received request to signup new partner from {}", request.getEmail());
+        ApiResponse response  = userService.partnerSignup(request);
+        log.info("Acknowledged partner signup {}", response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }
 
