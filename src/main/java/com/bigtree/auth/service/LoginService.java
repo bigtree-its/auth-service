@@ -222,7 +222,17 @@ public class LoginService {
 
         PasswordResetOtp savedOtp = resetRepository.save(otp);
         log.info("Generated otp {}", savedOtp);
-        emailService.setOnetimePasscode(email, user.getName(), savedOtp.getOtp());
+        PasswordResetEmail passwordResetEmail = PasswordResetEmail.builder()
+                .otp(salt)
+                .email(email)
+                .name(user.getName())
+                .build();
+        if ( user.getUserType() == UserType.Business){
+            passwordResetEmail.setTargetUrl("https://www.partner-eatem.co.uk/password_reset/submit");
+        }else{
+            passwordResetEmail.setTargetUrl("https://www.pogogi.co.uk/password_reset/submit");
+        }
+        emailService.setOnetimePasscode(passwordResetEmail);
         return savedOtp;
     }
 

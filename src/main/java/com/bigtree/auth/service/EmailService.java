@@ -3,6 +3,7 @@ package com.bigtree.auth.service;
 import com.bigtree.auth.config.ResourcesConfig;
 import com.bigtree.auth.entity.Account;
 import com.bigtree.auth.entity.User;
+import com.bigtree.auth.model.PasswordResetEmail;
 import com.bigtree.auth.security.CryptoHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -35,19 +36,17 @@ public class EmailService {
     @Autowired
     CryptoHelper cryptoHelper;
 
-    public void setOnetimePasscode(String email, String customerName, String otp) {
-        log.info("Sending otp to user email {}", email);
+    public void setOnetimePasscode(PasswordResetEmail passwordResetEmail) {
+        log.info("Sending otp to user email {}", passwordResetEmail.getEmail());
 
         try {
             Map<String, String> queries = new HashMap<>();
-            queries.put("email", email);
-            queries.put("otp", otp);
-            final String queryString = mapToQueryString(queries);
-            log.info("The encoded query string {}", queryString);
+            queries.put("email", passwordResetEmail.getEmail());
+            queries.put("otp", passwordResetEmail.getOtp());
             Map<String, Object> params = new HashMap<>();
-            params.put("customerName", customerName);
-            params.put("queryString", cryptoHelper.encryptUrl(queryString));
-            sendMail(email, "Reset your password | homegrub", "password-reset-instructions", params);
+            params.put("data", passwordResetEmail);
+            params.put("resetUrl", passwordResetEmail.getTargetUrl()+"?qs="+ cryptoHelper.encryptUrl(mapToQueryString(queries)));
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | EATem", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
