@@ -27,19 +27,20 @@ public class DummyData {
     public static UserRegistrationRequest createRegisterRequest(UserType userType) {
         String clientEmail = "";
         switch (userType){
-            case Customer -> clientEmail = CUSTOMER_EMAIL;
-            case Business -> clientEmail = SUPPLIER_EMAIL;
-            case Employee -> clientEmail = EMPLOYEE_EMAIL;
-            case CustomerApp -> clientEmail = CUSTOMER_APP_EMAIL;
-            case SupplierApp -> clientEmail = SUPPLIER_APP_EMAIL;
+                    case Customer -> clientEmail = CUSTOMER_EMAIL;
+                    case Business -> clientEmail = SUPPLIER_EMAIL;
+                    case Employee -> clientEmail = EMPLOYEE_EMAIL;
+                    case CustomerApp -> clientEmail = CUSTOMER_APP_EMAIL;
+                    case SupplierApp -> clientEmail = SUPPLIER_APP_EMAIL;
+                    case Admin -> throw new UnsupportedOperationException("Unimplemented case: " + userType);
+                    default -> throw new IllegalArgumentException("Unexpected value: " + userType);
         }
         return UserRegistrationRequest.builder()
                 .userType(userType)
                 .password("1234")
                 .mobile("0987654321")
                 .email(clientEmail)
-                .firstName("firstName")
-                .lastName("lastName")
+                .name("Name")
                 .build();
     }
 }

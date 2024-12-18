@@ -32,21 +32,19 @@ class AuthApplicationTests {
 
 		Account account = accountRepository.findByUserId(saved.get_id());
 		Assertions.notNull("Identity account not created ", account);
-		Assertions.isTrue("Identity accountId not created ", account.getIdentity().equals(saved.get_id()));
+		Assertions.isTrue("Identity accountId not created ", account.getUserId().equals(saved.get_id()));
 		Assertions.isTrue("Identity password not stored correctly ", account.getPassword().equals(userRegReq.getPassword()));
 
 		saved.setEmail("updated@email.com");
 		saved.setMobile("1111111111");
-		saved.setFirstName("UpdatedFirstName");
-		saved.setLastName("UpdatedLastName");
+		saved.setName("UpdatedName");
 		User updated = userService.updateUser(saved.get_id(), saved);
 
 		Assertions.notNull("Updated UserId is empty", updated.get_id());
 		Assertions.isTrue("Updated UserId is changed", updated.get_id().equals(saved.get_id()));
 		Assertions.notNull("Updated Identity Email is empty", updated.getEmail());
 		Assertions.notNull("Updated Identity Mobile is empty", updated.getMobile());
-		Assertions.notNull("Updated Identity FirstName is empty", updated.getFirstName());
-		Assertions.notNull("Updated Identity LastName is empty", updated.getLastName());
+		Assertions.notNull("Updated Identity FirstName is empty", updated.getName());
 
 		User getById= userService.getUser(updated.get_id());
 		Assertions.isTrue("Identity not found", getById != null);
