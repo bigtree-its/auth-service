@@ -2,6 +2,7 @@ package com.bigtree.auth.service;
 
 import com.bigtree.auth.config.ResourcesConfig;
 import com.bigtree.auth.entity.Account;
+import com.bigtree.auth.entity.PartnerSignup;
 import com.bigtree.auth.entity.User;
 import com.bigtree.auth.model.PasswordResetEmail;
 import com.bigtree.auth.security.CryptoHelper;
@@ -111,6 +112,19 @@ public class EmailService {
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
 
             sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new homegrub Account", "signup-confirmation", params);
+        } catch (Exception e) {
+            log.error("Error when preparing mail message. {}", e.getMessage());
+        }
+    }
+
+    public void sendPartnerSignupAcknowledgement(PartnerSignup partnerSignup) {
+        log.info("Sending partner signup acknowledgement email {}", partnerSignup.getEmail());
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("email", partnerSignup.getEmail());
+            params.put("mobile", partnerSignup.getMobile());
+            params.put("name", partnerSignup.getName());
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", Homegrub Partner Interest", "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

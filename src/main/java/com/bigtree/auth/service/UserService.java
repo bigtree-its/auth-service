@@ -1,12 +1,14 @@
 package com.bigtree.auth.service;
 
 
+import com.bigtree.auth.entity.PartnerSignup;
 import com.bigtree.auth.entity.User;
 import com.bigtree.auth.entity.Account;
 import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.error.ApiException;
 import com.bigtree.auth.model.*;
 import com.bigtree.auth.repository.AccountRepository;
+import com.bigtree.auth.repository.PartnerSignupRepository;
 import com.bigtree.auth.repository.UserRepository;
 import com.bigtree.auth.security.JwtTokenUtil;
 import jakarta.validation.Valid;
@@ -40,6 +42,9 @@ public class UserService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    PartnerSignupRepository partnerSignupRepository;
 
     public List<User> getUsers() {
         log.info("Fetching all users");
@@ -288,5 +293,33 @@ public class UserService {
         }else{
             throw new ApiException(HttpStatus.BAD_REQUEST, "Account not found");
         }
+    }
+
+    public ApiResponse partnerSignup(PartnerSignupRequest request) {
+        log.info("Saving partner sign up interest");
+        if ( StringUtils.isEmpty(request.getEmail())){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Email is mandatory");
+        }
+        if ( StringUtils.isEmpty(request.getMobile())){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Mobile is mandatory");
+        }
+        if ( StringUtils.isEmpty(request.getName())){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Name is mandatory");
+        }
+        PartnerSignup existing = partnerSignupRepository.findByEmail(request.getEmail());
+        if ( existing != null){
+            throw new ApiException(HttpStatus.BAD_REQUEST, "You have already registered your interest. We will get back to you soon. Sorry for any delays.");
+        }
+        PartnerSignup partnerSignup = PartnerSignup.builder().dateReceived(LocalDateTime.now())
+                .name(request.getName())
+                .email(request.getEmail())
+                .mobile(request.getMobile()).build();
+
+        PartnerSignup saved = partnerSignupRepository.save(partnerSignup);
+        if ( saved.get_id() != null){
+            emailService.sendPartnerSignupAcknowledgement(partnerSignup);
+            log.info("Partner signup interested created. {}", saved.getEmail());
+        }
+        return ApiResponse.builder().endpoint("/partner-signup").message("Success").build();
     }
 }
