@@ -47,7 +47,7 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("data", passwordResetEmail);
             params.put("resetUrl", passwordResetEmail.getTargetUrl()+"?qs="+ cryptoHelper.encryptUrl(mapToQueryString(queries)));
-            sendMail(passwordResetEmail.getEmail(), "Reset your password | EATem", "password-reset-instructions", params);
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | Zcoop", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -95,7 +95,7 @@ public class EmailService {
             params.put("customerName", fullName);
             sendMail(email, "Your password has been changed | homegrub", "password-reset-successful-email", params);
         } catch (Exception e) {
-            log.error("Error when preparing mail message. {}", e.getMessage());
+            log.error("Error when preparing password reset confirmation e-mail message. {}", e.getMessage());
         }
     }
 
