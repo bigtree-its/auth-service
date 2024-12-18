@@ -26,8 +26,8 @@ spring:
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username: noreply.houseofchef@gmail.com
-    password: rfgmkyrbdgwsnvgi
+    username: noreply.zcoop@gmail.com
+    password: akubyctoglgqakub 
     port: 587
     debug: true
     properties:

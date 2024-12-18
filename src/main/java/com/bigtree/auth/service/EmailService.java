@@ -60,6 +60,7 @@ public class EmailService {
             helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
+            helper.setFrom("noreply@zcoop.co.uk");
             helper.setText(emailContentHelper.build(template, params), true);
             javaMailSender.send(mimeMessage);
             log.info("Email sent to user {}", to);
