@@ -230,7 +230,7 @@ public class LoginService {
         if ( user.getUserType() == UserType.Business){
             passwordResetEmail.setTargetUrl("https://www.partner-eatem.co.uk/password_reset/submit");
         }else{
-            passwordResetEmail.setTargetUrl("https://www.pogogi.co.uk/password_reset/submit");
+            passwordResetEmail.setTargetUrl("https://www.zcoop.co.uk/password_reset/submit");
         }
         emailService.setOnetimePasscode(passwordResetEmail);
         return savedOtp;
