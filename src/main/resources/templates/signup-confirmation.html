@@ -115,7 +115,7 @@
         Hi <span th:utext="${customerName}"></span>,
     </div>
     <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        Click the button below to activate your new homegrub account.
+        Click the button below to activate your new Zcoop account.
     </div>
     <div style="margin-top:30px">
         <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
@@ -123,9 +123,8 @@
                 <td align="center">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                         <tr>
-                            <td align="center" style="background-color: #ffb524;padding: 10px 20px;text-decoration: none;">
-                                <a th:href="@{http://localhost:4200/account_activate?qs={qs}(qs = ${queryString})}"
-                                   style="background-color: #ffb524;padding: 10px 20px;text-decoration: none;" target="_blank">Activate my account</a>
+                            <td align="center">
+                                <a th:href="${targetUrl}" class="button" target="_blank">Activate my account</a>
                             </td>
                         </tr>
                     </table>
@@ -134,7 +133,6 @@
         </table>
     </div>
 
-    <!--    <span style="font-weight:900;font-size:25px;margin-top:20px;padding: 10px;color: #212121;"  th:utext="${otp}"></span>-->
     <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
         If you need additional assistance, or you did not make this change, please contact help@zcoop.co.uk
     </div>

@@ -2,7 +2,7 @@ server:
   port: 8081
 
 crypto:
-  key: 1234567891234567
+  key: ${AUTH_CRYPTO_KEY}
 
 auth:
   permitAll: /users/v1/private-key-jwt,/users/v1/signup,/users/v1,/accounts/v1/activate,/auth/v1/machine/token,/passwords/v1,/passwords/v1/reset_initiate,/passwords/v1/reset_submit,/tokens/v1,/users/v1/*
@@ -21,13 +21,13 @@ spring:
   data:
     mongodb:
       #bigtree.authz@gmail.com
-      uri: mongodb+srv://bigtreeauthz:SvGkhNpbVtJaY0Q2@bigtreeauthzcluster.ajaigyp.mongodb.net/?retryWrites=true&w=majority&appName=BigtreeAuthzCluster
+      uri: ${AUTH_DB_URI}
       database: prod
   mail:
     default-encoding: UTF-8
     host: smtp.gmail.com
-    username: noreply.zcoop@gmail.com
-    password: akubyctoglgqakub 
+    username: ${AUTH_EMAIL}
+    password: ${AUTH_EMAIL_PASSWORD} 
     port: 587
     debug: true
     properties:
