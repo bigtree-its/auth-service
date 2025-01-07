@@ -64,7 +64,7 @@ public class EmailService {
             helper.setFrom("notifications@sapadu.co.uk");
             helper.setText(emailContentHelper.build(template, params), true);
             javaMailSender.send(mimeMessage);
-            log.info("Email sent to user {}", to);
+            log.info("Email sent to user {} from {}", to, helper.getMimeMessage().getFrom()[0]);
         } catch (MessagingException e) {
             log.info("Exception while sending email to user {}", to);
         }
@@ -93,7 +93,7 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | homegrub", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | Sapadu", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing password reset confirmation e-mail message. {}", e.getMessage());
         }
@@ -111,7 +111,7 @@ public class EmailService {
             params.put("customerName", user.getName());
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
 
-            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new homegrub Account", "signup-confirmation", params);
+            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new Sapadu Account", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -124,7 +124,7 @@ public class EmailService {
             params.put("email", partnerSignup.getEmail());
             params.put("mobile", partnerSignup.getMobile());
             params.put("name", partnerSignup.getName());
-            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", Homegrub Partner Interest", "partner-signup-acknowledgement", params);
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", Sapadu Partner Interest", "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
