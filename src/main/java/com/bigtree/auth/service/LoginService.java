@@ -228,9 +228,9 @@ public class LoginService {
                 .name(user.getName())
                 .build();
         if ( user.getUserType() == UserType.Business){
-            passwordResetEmail.setTargetUrl("https://www.partner-sapadu.co.uk/password_reset/submit");
+            passwordResetEmail.setTargetUrl("https://www.partner-okeat.co.uk/password_reset/submit");
         }else{
-            passwordResetEmail.setTargetUrl("https://www.sapadu.co.uk/password_reset/submit");
+            passwordResetEmail.setTargetUrl("https://www.okeat.co.uk/password_reset/submit");
         }
         emailService.setOnetimePasscode(passwordResetEmail);
         return savedOtp;

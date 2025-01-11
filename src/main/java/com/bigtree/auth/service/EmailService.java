@@ -47,7 +47,7 @@ public class EmailService {
             Map<String, Object> params = new HashMap<>();
             params.put("data", passwordResetEmail);
             params.put("resetUrl", passwordResetEmail.getTargetUrl()+"?qs="+ cryptoHelper.encryptUrl(mapToQueryString(queries)));
-            sendMail(passwordResetEmail.getEmail(), "Reset your password | Sapadu", "password-reset-instructions", params);
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | OK EAT", "password-reset-instructions", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -61,7 +61,7 @@ public class EmailService {
             helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setFrom("notifications@sapadu.co.uk");
+            helper.setFrom("notifications@okeat.co.uk");
             helper.setText(emailContentHelper.build(template, params), true);
             javaMailSender.send(mimeMessage);
             log.info("Email sent to user {} from {}", to, helper.getMimeMessage().getFrom()[0]);
@@ -93,7 +93,7 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | Sapadu", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | OK EAT", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing password reset confirmation e-mail message. {}", e.getMessage());
         }
@@ -111,7 +111,7 @@ public class EmailService {
             params.put("customerName", user.getName());
             params.put("queryString", cryptoHelper.encryptUrl(queryString));
 
-            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new Sapadu Account", "signup-confirmation", params);
+            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new OK EAT Account", "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -124,7 +124,7 @@ public class EmailService {
             params.put("email", partnerSignup.getEmail());
             params.put("mobile", partnerSignup.getMobile());
             params.put("name", partnerSignup.getName());
-            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", Sapadu Partner Interest", "partner-signup-acknowledgement", params);
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", OK EAT Partner Interest", "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
