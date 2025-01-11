@@ -3,14 +3,15 @@
 
 <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
     <style type="text/css">
         @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200&display=swap');
+
         body,
         table,
         td,
@@ -62,8 +63,9 @@
             align-items: center;
             gap: 10px;
         }
+
         .ii a[href] {
-                color: #fff;
+            color: #fff;
         }
 
         .button {
@@ -91,6 +93,7 @@
             .mobile-hide {
                 display: none !important;
             }
+
             .mobile-center {
                 text-align: center !important;
             }
@@ -99,6 +102,7 @@
         .ii a[href] {
             color: #fff;
         }
+
         div[style*="margin: 16px 0;"] {
             margin: 0 !important;
         }
@@ -106,47 +110,47 @@
 </head>
 
 <body style="margin: 0 !important; padding: 0 !important; ">
-<div class="main-body">
-    <div class="banner">
-        <img src="https://imagedelivery.net/AEAandXNB2C_FZ3VOFH8Dw/54846064-23ac-4f80-425c-4fc44f712200/public"
-            style="height:40px;width:30px;object-fit:contain;">
-        <span style="font-weight: 900;font-size: 18px;">Ok Eat</span>
-    </div>
-    <div style="font-size: 15px;padding: 10px;font-weight: 600; line-height: 20px;text-align: left;color: #212121;">
-        Almost done...
-    </div>
-    <div style="margin-top:15px;padding: 10px;color: #212121;">
-        Hi <span th:utext="${customerName}"></span>,
-    </div>
-    <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        Click the button below to activate your new OK EAT account.
-    </div>
-    <div style="margin-top:30px">
-        <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
-            <tr>
-                <td align="center">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
-                        <tr>
-                            <td align="center">
-                                <a th:href="${targetUrl}" class="button" target="_blank">Activate my account</a>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="main-body">
+        <div style=" display: flex;flex-direction: row;align-items: center; gap: 10px;">
+            <img src="https://imagedelivery.net/AEAandXNB2C_FZ3VOFH8Dw/54846064-23ac-4f80-425c-4fc44f712200/public"
+                style="height:40px;width:30px;object-fit:contain;">
+            <span style="font-weight: 900;font-size: 18px;">Ok Eat</span>
+        </div>
+        <div style="font-size: 15px;padding: 10px;font-weight: 600; line-height: 20px;text-align: left;color: #212121;">
+            Almost done...
+        </div>
+        <div style="margin-top:15px;padding: 10px;color: #212121;">
+            Hi <span th:utext="${customerName}"></span>,
+        </div>
+        <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
+            Click the button below to activate your new OK EAT account.
+        </div>
+        <div style="margin-top:30px">
+            <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                    <td align="center">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+                            <tr>
+                                <td align="center">
+                                    <a th:href="${targetUrl}" class="button" target="_blank">Activate my account</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-    <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-        If you need additional assistance, or you did not make this change, please contact contact@okeat.co.uk
-    </div>
-    <div style="margin-top:50px;border-top:1px solid #f1f1f1;color: #d3d3d3;padding:20px 0;text-align:left;">
-        <div>
-            © 2025 OK EAT Limited. All Rights Reserved
-            <br>359, Glasgow Road, Glasgow, G760HE +44 141 644 0955
+        <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
+            If you need additional assistance, or you did not make this change, please contact contact@okeat.co.uk
+        </div>
+        <div style="margin-top:50px;border-top:1px solid #f1f1f1;color: #d3d3d3;padding:20px 0;text-align:left;">
+            <div>
+                © 2025 OK EAT Limited. All Rights Reserved
+                <br>359, Glasgow Road, Glasgow, G760HE +44 141 644 0955
+            </div>
         </div>
     </div>
-</div>
 </body>
 
 </html>
