@@ -2,7 +2,14 @@ server:
   port: 8081
 
 crypto:
-  key: ${AUTH_CRYPTO_KEY}
+  key: ${CRYPTO_KEY}
+
+account:
+  activation:
+    url:
+      customer: ${ACCOUNT_ACTIVATE_URL_CUSTOMER}
+      admin: ${ACCOUNT_ACTIVATE_URL_ADMIN}
+      partner: ${ACCOUNT_ACTIVATE_URL_PARTNER}
 
 auth:
   permitAll: /users/v1/private-key-jwt,/users/v1/signup,/users/v1,/accounts/v1/activate,/auth/v1/machine/token,/passwords/v1,/passwords/v1/reset_initiate,/passwords/v1/reset_submit,/tokens/v1,/users/v1/*

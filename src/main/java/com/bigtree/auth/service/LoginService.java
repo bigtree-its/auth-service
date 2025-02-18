@@ -228,7 +228,9 @@ public class LoginService {
                 .name(user.getName())
                 .build();
         if ( user.getUserType() == UserType.Business){
-            passwordResetEmail.setTargetUrl("https://www.partner-okeat.co.uk/password_reset/submit");
+            passwordResetEmail.setTargetUrl("https://www.partner-eatem.co.uk/password_reset/submit");
+        }else if ( user.getUserType() == UserType.Admin){
+            passwordResetEmail.setTargetUrl("localhost:4200/password_reset/submit");
         }else{
             passwordResetEmail.setTargetUrl("https://www.okeat.co.uk/password_reset/submit");
         }

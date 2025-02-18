@@ -46,8 +46,13 @@ public class UserService {
     @Autowired
     PartnerSignupRepository partnerSignupRepository;
 
-    public List<User> getUsers() {
-        log.info("Fetching all users");
+    public List<User> getUsers(String email) {
+        log.info("Fetching users users");
+        List<User> users = new ArrayList<>();
+        if ( StringUtils.isNotEmpty(email)){
+            users.add(repository.findByEmail(email));
+            return users;
+        }
         return repository.findAll();
     }
 

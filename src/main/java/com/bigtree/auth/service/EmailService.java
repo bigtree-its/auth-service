@@ -4,12 +4,14 @@ import com.bigtree.auth.config.ResourcesConfig;
 import com.bigtree.auth.entity.Account;
 import com.bigtree.auth.entity.PartnerSignup;
 import com.bigtree.auth.entity.User;
+import com.bigtree.auth.entity.UserType;
 import com.bigtree.auth.model.PasswordResetEmail;
 import com.bigtree.auth.security.CryptoHelper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,13 @@ public class EmailService {
     @Autowired
     CryptoHelper cryptoHelper;
 
+    @Value("${account.activation.url.customer}")
+    private String accountActivationUrlCustomer;
+    @Value("${account.activation.url.partner}")
+    private String accountActivationUrlPartner;
+    @Value("${account.activation.url.admin}")
+    private String accountActivationUrlAdmin;
+
     public void setOnetimePasscode(PasswordResetEmail passwordResetEmail) {
         log.info("Sending otp to user email {}", passwordResetEmail.getEmail());
 
@@ -46,8 +55,10 @@ public class EmailService {
             queries.put("otp", passwordResetEmail.getOtp());
             Map<String, Object> params = new HashMap<>();
             params.put("data", passwordResetEmail);
-            params.put("resetUrl", passwordResetEmail.getTargetUrl()+"?qs="+ cryptoHelper.encryptUrl(mapToQueryString(queries)));
-            sendMail(passwordResetEmail.getEmail(), "Reset your password | OK EAT", "password-reset-instructions", params);
+            params.put("resetUrl",
+                    passwordResetEmail.getTargetUrl() + "?qs=" + cryptoHelper.encryptUrl(mapToQueryString(queries)));
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | OK EAT", "password-reset-instructions",
+                    params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -71,17 +82,18 @@ public class EmailService {
     }
 
     private String encode(String value) {
-        String encoded=  UriUtils.encodeQueryParam(value, "UTF-8");
+        String encoded = UriUtils.encodeQueryParam(value, "UTF-8");
         log.info("Encoded value {}", encoded);
-        return  encoded;
+        return encoded;
     }
 
     private String mapToQueryString(Map<String, String> query) {
         List<String> entries = new LinkedList<>();
         for (Map.Entry<String, String> entry : query.entrySet()) {
             try {
-                entries.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
-            } catch(Exception e) {
+                entries.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
+                        + URLEncoder.encode(entry.getValue(), "UTF-8"));
+            } catch (Exception e) {
                 log.error("Unable to encode string for URL: " + entry.getKey() + " / " + entry.getValue(), e);
             }
         }
@@ -100,18 +112,27 @@ public class EmailService {
     }
 
     public void sendAccountActivationEmail(Account account, User user) {
-        log.info("Sending account activation email {}", user.getEmail());
+        log.info("Sending account activation email to {} user {}", user.getUserType(), user.getEmail());
         try {
             Map<String, String> queries = new HashMap<>();
             queries.put("activationCode", account.getActivationCode());
             queries.put("accountId", account.get_id());
             final String queryString = mapToQueryString(queries);
-
+            final String encryptedQs = cryptoHelper.encryptUrl(queryString);
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", user.getName());
-            params.put("queryString", cryptoHelper.encryptUrl(queryString));
+            params.put("queryString", encryptedQs);
 
-            sendMail(user.getEmail(), user.getName().toUpperCase()+ ", finish setting up your new OK EAT Account", "signup-confirmation", params);
+            if (user.getUserType() == UserType.Business) {
+                params.put("targetUrl", accountActivationUrlPartner + "?qs=" + encryptedQs);
+            } else if (user.getUserType() == UserType.Customer) {
+                params.put("targetUrl", accountActivationUrlCustomer + "?qs=" + encryptedQs);
+            } else if (user.getUserType() == UserType.Admin) {
+                params.put("targetUrl", accountActivationUrlAdmin + "?qs=" + encryptedQs);
+            }
+
+            sendMail(user.getEmail(), user.getName().toUpperCase() + ", finish setting up your new OK EAT Account",
+                    "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }
@@ -124,7 +145,8 @@ public class EmailService {
             params.put("email", partnerSignup.getEmail());
             params.put("mobile", partnerSignup.getMobile());
             params.put("name", partnerSignup.getName());
-            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase()+ ", OK EAT Partner Interest", "partner-signup-acknowledgement", params);
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase() + ", OK EAT Partner Interest",
+                    "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
         }

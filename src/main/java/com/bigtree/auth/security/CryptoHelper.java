@@ -84,9 +84,10 @@ public class CryptoHelper {
         return new SecretKeySpec(tmp.getEncoded(), "AES");
     }
 
+
     public String encryptUrl(String value){
-        String initVector = "uPfVxw5nykjNf9hF";
-        String key = "uPfVxw5nykjNf9hF";
+        String initVector = privateKey;
+        String key = privateKey;
 
         IvParameterSpec iv = null;
         try {
@@ -119,8 +120,8 @@ public class CryptoHelper {
     }
 
     public String decryptUrl(String value){
-        String initVector = "uPfVxw5nykjNf9hF";
-        String key = "uPfVxw5nykjNf9hF";
+        String initVector = privateKey;
+        String key = privateKey;
 
         IvParameterSpec iv = null;
         try {

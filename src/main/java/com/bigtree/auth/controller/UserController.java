@@ -6,13 +6,8 @@ import com.bigtree.auth.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 
 import com.bigtree.auth.model.*;
-import com.bigtree.auth.service.LoginService;
 import com.bigtree.auth.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +30,9 @@ public class UserController {
     SessionService sessionService;
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getAll(){
+    public ResponseEntity<List<User>> getAll( @RequestParam(value = "email", required = false) String email){
         log.info("Received request to get all identities");
-        List<User> identities = userService.getUsers();
+        List<User> identities = userService.getUsers(email);
         return ResponseEntity.ok().body(identities);
     }
 
