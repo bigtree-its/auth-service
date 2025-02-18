@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
     <style type="text/css">
-        @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200&display=swap');
         body,
         table,
         td,
@@ -46,13 +45,15 @@
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
-            font-family: 'Dosis', sans-serif;
+            background-color: #fff;
+            border: 1px solid #212121;
         }
         
+        a,
         a:link,
         a:visited {
-            background-color: #f44336;
-            color: white;
+            background-color: #fb7701;
+            color: #212121;
             padding: 14px 25px;
             text-align: center;
             text-decoration: none;
@@ -61,35 +62,16 @@
         
         a:hover,
         a:active {
-            background-color: #f44336;
-            color: white;
+            background-color: #fb8601;
+            color: #212121;
             padding: 14px 25px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
         }
         
-        .main-body {
-            width: 600px;
-            margin: auto;
-            border: 1px solid #e2e2e2;
-            padding: 20px;
-        }
-        
-        .banner {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
-        }
-        
         .ii a[href] {
             color: #fff;
-        }
-        
-        .footer-section {
-            margin-top: 40px;
-            font-size: small;
         }
         
         a[x-apple-data-detectors] {
@@ -121,7 +103,7 @@
 </head>
 
 <body style="margin: 0 !important; padding: 0 !important; ">
-    <div class="main-body">
+    <div>
         <div style="height:100px;width:150px;">
             <img src="https://imagedelivery.net/AEAandXNB2C_FZ3VOFH8Dw/c0d176ef-ed11-4a6b-1d4d-492508fcae00/public" style="height:100%;width:100%;object-fit:contain;">
         </div>
@@ -134,21 +116,9 @@
         <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
             Click the button below to activate your new OK EAT account.
         </div>
-        <div style="margin-top:30px">
-            <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                <tr>
-                    <td align="center">
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
-                            <tr>
-                                <td align="center">
-                                    <a th:href="${targetUrl}" target="_blank">Activate my
-                                            account</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+        <div style="margin:30px 0;">
+            <a th:href="${targetUrl}" target="_blank">Activate my
+                account</a>
         </div>
 
         <div style="margin-top:20px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
