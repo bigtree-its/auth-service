@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,7 @@ public class AccountService {
             Account account = accountOps.get();
             if (account.getActivationCode().equalsIgnoreCase(req.getActivationCode())){
                 account.setActive(true);
+                account.setActivationDate(LocalDateTime.now());
                 accountRepository.save(account);
                 log.info("Account {} is activated", account.get_id());
             }else{

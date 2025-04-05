@@ -17,6 +17,7 @@ public class Account {
     private String userId;
     private String password;
     private LocalDateTime passwordChanged;
+    private LocalDateTime activationDate;
     private boolean active;
     private String activationCode;
 }
