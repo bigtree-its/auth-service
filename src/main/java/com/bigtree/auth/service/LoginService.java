@@ -105,7 +105,6 @@ public class LoginService {
         final String userId = claims.get("user_id", String.class);
         final String userSecret = claims.get("user_secret", String.class);
         final String userType = claims.get("user_type", String.class);
-        final String userEmail = claims.get("user_email", String.class);
         user = userRepository.findByUserIdAndUserType(userId, UserType.fromName(userType));
         if ( user != null) {
             Account account = accountRepository.findByUserIdAndPassword(user.get_id(), userSecret);

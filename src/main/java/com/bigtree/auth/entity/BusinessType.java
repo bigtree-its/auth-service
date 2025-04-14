@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum BusinessType {
 
-    CloudKitchen("CloudKitchen"),
+    CloudKitchen("KitchenPartner"),
     Fashion("DeliveryPartner");
 
     private final String name;

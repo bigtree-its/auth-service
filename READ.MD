@@ -3,4 +3,4 @@ https://medium.com/@divyanshuraj_39877/deploying-spring-boot-application-on-hero
 
 
 # Run Local machine
-gradle bootRun --args='--spring.profiles.active=dev'
+gradle bootRun --args='--spring.profiles.active=local'

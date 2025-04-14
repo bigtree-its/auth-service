@@ -57,7 +57,7 @@ public class EmailService {
             params.put("data", passwordResetEmail);
             params.put("resetUrl",
                     passwordResetEmail.getTargetUrl() + "?qs=" + cryptoHelper.encryptUrl(mapToQueryString(queries)));
-            sendMail(passwordResetEmail.getEmail(), "Reset your password | OK EAT", "password-reset-instructions",
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | MakeMyMeal", "password-reset-instructions",
                     params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
@@ -105,7 +105,7 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | OK EAT", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | MakeMyMeal", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing password reset confirmation e-mail message. {}", e.getMessage());
         }
@@ -131,7 +131,7 @@ public class EmailService {
                 params.put("targetUrl", accountActivationUrlAdmin + "?qs=" + encryptedQs);
             }
 
-            sendMail(user.getEmail(), user.getName().toUpperCase() + ", finish setting up your new OK EAT Account",
+            sendMail(user.getEmail(), user.getName().toUpperCase() + ", finish setting up your new MakeMyMeal Account",
                     "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
@@ -145,7 +145,7 @@ public class EmailService {
             params.put("email", partnerSignup.getEmail());
             params.put("mobile", partnerSignup.getMobile());
             params.put("name", partnerSignup.getName());
-            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase() + ", OK EAT Partner Interest",
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase() + ", MakeMyMeal Partner Interest",
                     "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());

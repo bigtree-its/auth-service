@@ -46,11 +46,24 @@ public class UserService {
     @Autowired
     PartnerSignupRepository partnerSignupRepository;
 
-    public List<User> getUsers(String email) {
-        log.info("Fetching users users");
+    public List<User> getUsers(String email, String userType) {
+        log.info("Fetching users");
         List<User> users = new ArrayList<>();
         if ( StringUtils.isNotEmpty(email)){
-            users.add(repository.findByEmail(email));
+            User byEmail = repository.findByEmail(email);
+            if ( byEmail != null){
+                users.add(byEmail);
+                log.info("Found an user with email {}", email);
+            }
+            
+            return users;
+        }
+        if ( StringUtils.isNotEmpty(userType) &&  StringUtils.isNotEmpty(email)){
+            users.add(repository.findByEmailAndUserType(email, UserType.fromName(userType)));
+            return users;
+        }
+        if ( StringUtils.isNotEmpty(userType) ){
+            users.addAll(repository.findByUserType(UserType.fromName(userType)));
             return users;
         }
         return repository.findAll();
