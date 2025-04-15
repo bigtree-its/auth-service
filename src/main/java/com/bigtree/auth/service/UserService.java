@@ -72,7 +72,7 @@ public class UserService {
     public User updateUser(String _id, User user) {
         Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
-            log.info("Identity already exist. Updating");
+            log.info("User already exist. Updating");
             User exist = optional.get();
             if (StringUtils.isNotEmpty(user.getName())) {
                 exist.setName(user.getName());
@@ -83,13 +83,25 @@ public class UserService {
             if (StringUtils.isNotEmpty(user.getEmail())) {
                 exist.setEmail(user.getEmail());
             }
+            if (user.getUserType() != null) {
+                exist.setUserType(user.getUserType());
+                if ( user.getUserType() == UserType.Customer){
+                    exist.setBusinessType(null);
+                }
+            }
+            if (user.getBusinessId() != null) {
+                exist.setBusinessId(user.getBusinessId());
+            }
+            if (user.getBusinessType() != null) {
+                exist.setBusinessType(user.getBusinessType());
+            }
             User updated = repository.save(exist);
             if (updated.get_id() != null) {
-                log.info("Identity updated {}", updated.get_id());
+                log.info("User updated {}", updated.get_id());
             }
             return updated;
         } else {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Identity not exist");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User not exist");
         }
 
     }
@@ -97,7 +109,7 @@ public class UserService {
     public void deleteUser(String _id) {
         Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
-            log.info("Identity already exist. Deleting identity");
+            log.info("User already exist. Deleting User");
             repository.deleteById(_id);
             Account byUserId = accountRepository.findByUserId(_id);
             if ( byUserId != null){
@@ -105,19 +117,19 @@ public class UserService {
                 log.info("Cleaned up accounts for user {}", _id);
             }
         } else {
-            log.error("Identity not found");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Identity not found");
+            log.error("User not found");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User not found");
         }
     }
 
     public User getUser(String _id) {
         Optional<User> optional = repository.findById(_id);
         if (optional.isPresent()) {
-            log.error("Identity found");
+            log.error("User found");
             return optional.get();
         } else {
-            log.error("Identity not found");
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Identity not found");
+            log.error("User not found");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "User not found");
         }
     }
 
@@ -210,7 +222,7 @@ public class UserService {
     public User findByEmailAndUserType(String email, UserType userType) {
         User byEmail = repository.findByEmail(email);
         if (byEmail == null) {
-            log.info("Identity not found with email {}", email);
+            log.info("User not found with email {}", email);
         }
         return byEmail;
     }
@@ -248,7 +260,7 @@ public class UserService {
                 }
             }
         }
-        throw new ApiException(HttpStatus.BAD_REQUEST, "Identity details required");
+        throw new ApiException(HttpStatus.BAD_REQUEST, "User details required");
     }
 
     private AuthRequest prepareRequest(Map<String, String> parameters) {
