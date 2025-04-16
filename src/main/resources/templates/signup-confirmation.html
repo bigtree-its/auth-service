@@ -114,7 +114,29 @@
             Hi <span th:utext="${customerName}"></span>,
         </div>
         <div style="margin-top:10px;font-size: 14px;line-height: 20px;text-align: left;color: #212121;padding: 0 10px;">
-            Click the button below to activate your new MakeMyMeal account.
+            You cannot access your account until you activate your account. Click the button below to activate your new MakeMyMeal account.
+        </div>
+        <div style="margin:10px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%; min-width: 100%;" width="100%">
+                <tbody>
+                    <tr>
+                        <td align="left" style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; padding-bottom: 16px;" valign="top">
+                            Your username
+                        </td>
+                        <td align="left" style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; padding-bottom: 16px;" valign="top">
+                            <span th:utext="${customerEmail}"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; padding-bottom: 16px;" valign="top">
+                            Your temporary password
+                        </td>
+                        <td align="left" style="font-family: Helvetica, sans-serif; font-size: 16px; vertical-align: top; padding-bottom: 16px;" valign="top">
+                            <span th:utext="${temporaryPassword}"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div style="margin:20px 0;">
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; box-sizing: border-box; width: 100%; min-width: 100%;" width="100%">

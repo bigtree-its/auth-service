@@ -1,6 +1,5 @@
 package com.bigtree.auth.model;
 
-import com.bigtree.auth.entity.BusinessType;
 import com.bigtree.auth.entity.UserType;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +15,6 @@ public class UserRegistrationRequest {
     private UserType userType;
     private String businessType;
     private String businessId;
+    private boolean isTemporaryPassword;
 
 }

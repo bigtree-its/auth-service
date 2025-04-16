@@ -117,12 +117,15 @@ public class EmailService {
             Map<String, String> queries = new HashMap<>();
             queries.put("activationCode", account.getActivationCode());
             queries.put("accountId", account.get_id());
+            
             final String queryString = mapToQueryString(queries);
             final String encryptedQs = cryptoHelper.encryptUrl(queryString);
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", user.getName());
             params.put("queryString", encryptedQs);
-
+            if ( user.getUserType() == UserType.Business){
+                params.put("temporaryPassword", account.getPassword());
+            }
             if (user.getUserType() == UserType.Business) {
                 params.put("targetUrl", accountActivationUrlPartner + "?qs=" + encryptedQs);
             } else if (user.getUserType() == UserType.Customer) {
