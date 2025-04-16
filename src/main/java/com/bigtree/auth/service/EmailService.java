@@ -121,6 +121,7 @@ public class EmailService {
             final String queryString = mapToQueryString(queries);
             final String encryptedQs = cryptoHelper.encryptUrl(queryString);
             Map<String, Object> params = new HashMap<>();
+            params.put("customerEmail", user.getEmail());
             params.put("customerName", user.getName());
             params.put("queryString", encryptedQs);
             if ( user.getUserType() == UserType.Business){
