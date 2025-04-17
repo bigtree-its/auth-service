@@ -200,6 +200,7 @@ public class UserService {
                 } else {
                     message = "Signup successful";
                 }
+                account.setPassword(req.getPassword());
                 emailService.sendAccountActivationEmail(account,user);
                 return ApiResponse.builder().endpoint("/register").message(message).build();
             }
