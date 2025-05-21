@@ -30,9 +30,9 @@ public class UserController {
     SessionService sessionService;
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getAll( @RequestParam(value = "email", required = false) String email, @RequestParam(value = "userType", required = false) String userType){
+    public ResponseEntity<List<User>> getAll(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "userType", required = false) String userType){
         log.info("Received request to get all identities");
-        List<User> identities = userService.getUsers(email, userType);
+        List<User> identities = userService.getUsers(name, email, userType);
         return ResponseEntity.ok().body(identities);
     }
 

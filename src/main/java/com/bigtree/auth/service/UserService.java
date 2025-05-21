@@ -46,7 +46,7 @@ public class UserService {
     @Autowired
     PartnerSignupRepository partnerSignupRepository;
 
-    public List<User> getUsers(String email, String userType) {
+    public List<User> getUsers(String name, String email, String userType) {
         log.info("Fetching users");
         List<User> users = new ArrayList<>();
         if ( StringUtils.isNotEmpty(email)){
@@ -56,6 +56,14 @@ public class UserService {
                 log.info("Found an user with email {}", email);
             }
             
+            return users;
+        }
+        if ( StringUtils.isNotEmpty(name)){
+            List<User> byName = repository.findByNameLike(name);
+            if ( byName != null){
+                users.addAll(byName);
+                log.info("Found user(s) with name {}", name);
+            }
             return users;
         }
         if ( StringUtils.isNotEmpty(userType) &&  StringUtils.isNotEmpty(email)){
