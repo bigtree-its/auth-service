@@ -231,7 +231,7 @@ public class LoginService {
         }else if ( user.getUserType() == UserType.Admin){
             passwordResetEmail.setTargetUrl("localhost:4200/password_reset/submit");
         }else{
-            passwordResetEmail.setTargetUrl("https://www.okeat.co.uk/password_reset/submit");
+            passwordResetEmail.setTargetUrl("https://www.foodogram.co.uk/password_reset/submit");
         }
         emailService.setOnetimePasscode(passwordResetEmail);
         return savedOtp;

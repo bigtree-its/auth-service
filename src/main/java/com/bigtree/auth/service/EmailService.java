@@ -57,7 +57,7 @@ public class EmailService {
             params.put("data", passwordResetEmail);
             params.put("resetUrl",
                     passwordResetEmail.getTargetUrl() + "?qs=" + cryptoHelper.encryptUrl(mapToQueryString(queries)));
-            sendMail(passwordResetEmail.getEmail(), "Reset your password | MakeMyMeal", "password-reset-instructions",
+            sendMail(passwordResetEmail.getEmail(), "Reset your password | Foodogram", "password-reset-instructions",
                     params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
@@ -72,7 +72,7 @@ public class EmailService {
             helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setFrom("notifications@okeat.co.uk");
+            helper.setFrom("notifications@foodogram.co.uk");
             helper.setText(emailContentHelper.build(template, params), true);
             javaMailSender.send(mimeMessage);
             log.info("Email sent to user {} from {}", to, helper.getMimeMessage().getFrom()[0]);
@@ -105,7 +105,7 @@ public class EmailService {
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("customerName", fullName);
-            sendMail(email, "Your password has been changed | MakeMyMeal", "password-reset-successful-email", params);
+            sendMail(email, "Your password has been changed | Foodogram", "password-reset-successful-email", params);
         } catch (Exception e) {
             log.error("Error when preparing password reset confirmation e-mail message. {}", e.getMessage());
         }
@@ -135,7 +135,7 @@ public class EmailService {
                 params.put("targetUrl", accountActivationUrlAdmin + "?qs=" + encryptedQs);
             }
 
-            sendMail(user.getEmail(), user.getName().toUpperCase() + ", finish setting up your new MakeMyMeal Account",
+            sendMail(user.getEmail(), user.getName().toUpperCase() + ", finish setting up your new Foodogram Account",
                     "signup-confirmation", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
@@ -149,7 +149,7 @@ public class EmailService {
             params.put("email", partnerSignup.getEmail());
             params.put("mobile", partnerSignup.getMobile());
             params.put("name", partnerSignup.getName());
-            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase() + ", MakeMyMeal Partner Interest",
+            sendMail(partnerSignup.getEmail(), partnerSignup.getName().toUpperCase() + ", Foodogram Partner Interest",
                     "partner-signup-acknowledgement", params);
         } catch (Exception e) {
             log.error("Error when preparing mail message. {}", e.getMessage());
